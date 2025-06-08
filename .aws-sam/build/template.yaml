@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: MLOps - Trigger KMeans Preprocessing
+Parameters:
+  ProcessingImageUri:
+    Type: String
+    Default: 683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3
+  CodePrefix:
+    Type: String
+    Default: mlops/jobs/01_preprocessing_kmeans/
+  S3Bucket:
+    Type: String
+    Default: swo-ngoctran-public
+Resources:
+  TriggerPreprocessingKMeans:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: trigger-preprocess-kmeans
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      CodeUri: TriggerPreprocessingKMeans
+      Timeout: 120
+      MemorySize: 512
+      Role: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
+      Environment:
+        Variables:
+          SAGEMAKER_ROLE_ARN: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
+          PROCESSING_IMAGE_URI:
+            Ref: ProcessingImageUri
+          CODE_PREFIX:
+            Ref: CodePrefix
+          S3_BUCKET:
+            Ref: S3Bucket
+      Events:
+        ApiTrigger:
+          Type: Api
+          Properties:
+            Path: /trigger-preprocess
+            Method: post
+    Metadata:
+      SamResourceId: TriggerPreprocessingKMeans
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/trigger-preprocess
