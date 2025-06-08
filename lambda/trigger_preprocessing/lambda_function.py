@@ -14,7 +14,7 @@ def lambda_handler(event, context):
         body = json.loads(event.get("body", "{}"))
         folders = body.get("folders", [])
         if not folders or not isinstance(folders, list):
-            raise ValueError("Missing or invalid 'folders' in request payload - testing")
+            raise ValueError("Missing or invalid 'folders' in request payload")
 
         # Load env vars
         role_arn = os.environ["SAGEMAKER_ROLE_ARN"]
@@ -42,17 +42,26 @@ def lambda_handler(event, context):
 
         # Submit SageMaker processing job
         job_name = f"preprocess-kmeans-{uuid.uuid4().hex[:8]}"
-        script_uri = f"s3://{bucket}{code_prefix}preprocessing_kmeans.py"
         output_uri = f"s3://{bucket}/inference_result/"
 
-        response = sagemaker.create_processing_job(
+        sagemaker.create_processing_job(
             ProcessingJobName=job_name,
             RoleArn=role_arn,
             AppSpecification={
                 "ImageUri": image_uri,
-                "ScriptUri": script_uri
+                "ContainerEntrypoint": ["python3", "/opt/ml/processing/code/preprocessing_kmeans.py"]
             },
-            ProcessingInputs=[],
+            ProcessingInputs=[
+                {
+                    "InputName": "code",
+                    "S3Input": {
+                        "S3Uri": f"s3://{bucket}/{code_prefix}",
+                        "LocalPath": "/opt/ml/processing/code",
+                        "S3DataType": "S3Prefix",
+                        "S3InputMode": "File"
+                    }
+                }
+            ],
             ProcessingOutputConfig={
                 "Outputs": [
                     {

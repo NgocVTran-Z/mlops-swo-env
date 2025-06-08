@@ -14,7 +14,7 @@ def lambda_handler(event, context):
         body = json.loads(event.get("body", "{}"))
         folders = body.get("folders", [])
         if not folders or not isinstance(folders, list):
-            raise ValueError("Missing or invalid 'folders' in request payload - testing")
+            raise ValueError("Missing or invalid 'folders' in request payload - testing 2")
 
         # Load env vars
         role_arn = os.environ["SAGEMAKER_ROLE_ARN"]
