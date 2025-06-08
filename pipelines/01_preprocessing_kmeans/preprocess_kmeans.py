@@ -38,7 +38,7 @@ def main():
             continue
 
         # Apply transformation
-        df["value"] = df["value"] * 20
+        df["value"] = df["value"] * 200
         print(f"🔍 Preview of {filename}:\n", df.head())
 
         # Take top 5 rows
