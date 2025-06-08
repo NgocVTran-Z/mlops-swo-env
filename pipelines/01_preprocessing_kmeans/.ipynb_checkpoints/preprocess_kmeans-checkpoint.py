@@ -3,17 +3,13 @@ import json
 import boto3
 import pandas as pd
 from io import BytesIO
-
-
-
 import sys
 
-# path that import can be shared
+# Add shared module to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../shared")))
 
-from utils.general_utils import load_parquet_from_s3, save_parquet_to_s3
 from logic.preprocessing_helper import internal_preprocessing
-
+from utils.general_utils import load_parquet_from_s3  # Only keep load, not save
 
 def main():
     print("✅ SageMaker preprocessing script started.")
@@ -22,14 +18,17 @@ def main():
     bucket = os.environ["S3_BUCKET"]
     input_files = json.loads(os.environ["INPUT_FILES"])
     data_prefix = os.environ["DATA_PREFIX"]
-    output_prefix = "mlops/pipelines/01_preprocessing_kmeans/"
+
+    # Output directory for SageMaker to auto-upload to S3
+    output_dir = "/opt/ml/processing/output"
 
     s3 = boto3.client("s3")
 
     for file_path in input_files:
         input_key = os.path.join(data_prefix, file_path)
         filename = os.path.basename(file_path)
-        output_key = os.path.join(output_prefix, f"{filename.replace('.parquet', '')}_processed.parquet")
+        output_filename = f"{filename.replace('.parquet', '')}_processed.parquet"
+        output_path = os.path.join(output_dir, output_filename)
 
         print(f"📥 Loading: s3://{bucket}/{input_key}")
         df = load_parquet_from_s3(s3, bucket, input_key)
@@ -39,13 +38,16 @@ def main():
             continue
 
         # Apply transformation
-        df = internal_preprocessing(df)
+        df = internal_preprocessing(df, filename)
 
         # Take top 5 rows
         df_head = df.head(3)
 
-        # Save to S3
-        print(f"📤 Saving to: s3://{bucket}/{output_key}")
-        save_parquet_to_s3(df_head, s3, bucket, output_key)
+        # Save locally to be picked up by SageMaker
+        print(f"📤 Saving to: {output_path}")
+        df_head.to_parquet(output_path, index=False)
 
     print("✅ SageMaker preprocessing completed.")
+
+if __name__ == "__main__":
+    main()
