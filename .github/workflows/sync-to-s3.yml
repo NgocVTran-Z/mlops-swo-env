@@ -29,6 +29,6 @@ jobs:
         run: |
           CHANGED=$(git ls-files -m | grep '\.py$' || true)
           for FILE in $CHANGED; do
-            echo "🔁 Uploading $FILE to s3://$S3_BUCKET/$CODE_PREFIX$FILE"
-            aws s3 cp "$FILE" "s3://$S3_BUCKET/$CODE_PREFIX$FILE"
+            echo "🔁 Uploading $FILE to s3://$S3_BUCKET/$CODE_PREFIX/$FILE"
+            aws s3 cp "$FILE" "s3://$S3_BUCKET/$CODE_PREFIX/$FILE"
           done
