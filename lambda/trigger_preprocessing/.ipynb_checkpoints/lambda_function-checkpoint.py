@@ -12,9 +12,9 @@ def lambda_handler(event, context):
 
     try:
         body = json.loads(event.get("body", "{}"))
-        folder = body.get("folder")  # e.g., "2024-01"
-        if not folder:
-            raise ValueError("Missing 'folder' in request payload")
+        folders = body.get("folders", [])
+        if not folders or not isinstance(folders, list):
+            raise ValueError("Missing or invalid 'folders' in request payload")
 
         # Load env vars
         role_arn = os.environ["SAGEMAKER_ROLE_ARN"]
@@ -23,18 +23,20 @@ def lambda_handler(event, context):
         code_prefix = os.environ["CODE_PREFIX"]
         data_prefix = os.environ["DATA_PREFIX"]
 
-        # List all .parquet files in that folder
-        prefix_to_search = f"{data_prefix}{folder}/"
-        print(f"🔍 Listing .parquet files under: s3://{bucket}/{prefix_to_search}")
+        # Collect all parquet files from all folders
+        all_files = []
+        for folder in folders:
+            prefix_to_search = f"{data_prefix}{folder}/"
+            print(f"🔍 Searching: s3://{bucket}/{prefix_to_search}")
+            response = s3.list_objects_v2(Bucket=bucket, Prefix=prefix_to_search)
+            files_in_folder = [obj["Key"] for obj in response.get("Contents", []) if obj["Key"].endswith(".parquet")]
+            all_files.extend(files_in_folder)
 
-        response = s3.list_objects_v2(Bucket=bucket, Prefix=prefix_to_search)
-        all_files = [obj["Key"] for obj in response.get("Contents", []) if obj["Key"].endswith(".parquet")]
-
-        # Convert back to relative paths
+        # Convert to relative path (strip off data_prefix)
         relative_files = [key.replace(data_prefix, "") for key in all_files]
 
         if not relative_files:
-            raise ValueError(f"No .parquet files found in s3://{bucket}/{prefix_to_search}")
+            raise ValueError(f"No .parquet files found in specified folders: {folders}")
 
         print(f"✅ Found files: {relative_files}")
 
