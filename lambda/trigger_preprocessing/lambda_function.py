@@ -12,9 +12,10 @@ def lambda_handler(event, context):
 
     try:
         body = json.loads(event.get("body", "{}"))
-        folder = body.get("folder")  # e.g., "2024-01"
-        if not folder:
-            raise ValueError("Missing 'folder' in request payload")
+        folders = body.get("folders", [])  # Expecting a list
+
+        if not isinstance(folders, list) or not folders:
+            raise ValueError("Missing or invalid 'folders' in request payload")
 
         # Load env vars
         role_arn = os.environ["SAGEMAKER_ROLE_ARN"]
@@ -23,24 +24,31 @@ def lambda_handler(event, context):
         code_prefix = os.environ["CODE_PREFIX"]
         data_prefix = os.environ["DATA_PREFIX"]
 
-        # List all .parquet files in that folder
-        prefix_to_search = f"{data_prefix}{folder}/"
-        print(f"🔍 Listing .parquet files under: s3://{bucket}/{prefix_to_search}")
+        # Gather all .parquet files from all folders
+        all_files = []
 
-        response = s3.list_objects_v2(Bucket=bucket, Prefix=prefix_to_search)
-        all_files = [obj["Key"] for obj in response.get("Contents", []) if obj["Key"].endswith(".parquet")]
+        for folder in folders:
+            prefix_to_search = f"{data_prefix}{folder}/"
+            print(f"🔍 Listing .parquet files under: s3://{bucket}/{prefix_to_search}")
 
-        # Convert back to relative paths
+            response = s3.list_objects_v2(Bucket=bucket, Prefix=prefix_to_search)
+            parquet_files = [
+                obj["Key"] for obj in response.get("Contents", [])
+                if obj["Key"].endswith(".parquet")
+            ]
+            all_files.extend(parquet_files)
+
+        # Convert to relative paths for SageMaker
         relative_files = [key.replace(data_prefix, "") for key in all_files]
 
         if not relative_files:
-            raise ValueError(f"No .parquet files found in s3://{bucket}/{prefix_to_search}")
+            raise ValueError(f"No .parquet files found in folders: {folders}")
 
         print(f"✅ Found files: {relative_files}")
 
         # Submit SageMaker processing job
         job_name = f"preprocess-kmeans-{uuid.uuid4().hex[:8]}"
-        script_uri = f"s3://{bucket}{code_prefix}preprocessing_kmeans.py"
+        script_uri = f"s3://{bucket}/{code_prefix}preprocessing_kmeans.py"
         output_uri = f"s3://{bucket}/inference_result/"
 
         response = sagemaker.create_processing_job(

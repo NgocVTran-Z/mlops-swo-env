@@ -4,15 +4,16 @@ import boto3
 import pandas as pd
 from io import BytesIO
 
-def load_parquet_from_s3(s3_client, bucket, key):
-    response = s3_client.get_object(Bucket=bucket, Key=key)
-    return pd.read_parquet(BytesIO(response["Body"].read()))
 
-def save_parquet_to_s3(df, s3_client, bucket, key):
-    buffer = BytesIO()
-    df.to_parquet(buffer, index=False)
-    buffer.seek(0)
-    s3_client.put_object(Bucket=bucket, Key=key, Body=buffer)
+
+import sys
+
+# path that import can be shared
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../shared")))
+
+from utils.general_utils import load_parquet_from_s3, save_parquet_to_s3
+from logic.preprocessing_helper import internal_preprocessing
+
 
 def main():
     print("✅ SageMaker preprocessing script started.")
@@ -38,8 +39,7 @@ def main():
             continue
 
         # Apply transformation
-        df["value"] = df["value"] * 20
-        print(f"🔍 Preview of {filename}:\n", df.head())
+        df = internal_preprocessing(df)
 
         # Take top 5 rows
         df_head = df.head(3)
