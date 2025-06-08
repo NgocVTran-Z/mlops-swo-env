@@ -42,7 +42,7 @@ def main():
         print(f"🔍 Preview of {filename}:\n", df.head())
 
         # Take top 5 rows
-        df_head = df.head(20)
+        df_head = df.head(3)
 
         # Save to S3
         print(f"📤 Saving to: s3://{bucket}/{output_key}")
