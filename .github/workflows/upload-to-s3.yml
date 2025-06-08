@@ -8,6 +8,7 @@ on:
 jobs:
   upload-to-s3:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -25,9 +26,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Upload committed .py files to S3
+      - name: Upload changed .py files to S3
         run: |
-          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.py$' || true)
+          CHANGED=$(git log -1 --name-only --pretty=format: | grep '\.py$' || true)
           for FILE in $CHANGED; do
             echo "🔁 Uploading $FILE to s3://$S3_BUCKET/$CODE_PREFIX$FILE"
             aws s3 cp "$FILE" "s3://$S3_BUCKET/$CODE_PREFIX$FILE"
