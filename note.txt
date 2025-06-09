@@ -1,2 +1,7 @@
 # API endpoint
 https://gww8r73ofa.execute-api.us-east-1.amazonaws.com/Prod/trigger-preprocess
+
+# API Gateway input json
+{
+  "folders": ["2024-01", "2024-02"]
+}
