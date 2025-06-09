@@ -10,9 +10,9 @@ def lambda_handler(event, context):
     print("🟢 Lambda triggered.")
     print("📨 Incoming event:", event)
 
-    print("🧪 ENV DUMP:")
-    for k, v in os.environ.items():
-        print(f"{k} = {v}")
+    # print("🧪 ENV DUMP:")
+    # for k, v in os.environ.items():
+    #     print(f"{k} = {v}")
 
 
     try:
