@@ -28,8 +28,10 @@ def main():
         input_key = os.path.join(data_prefix, file_path)
         filename = os.path.basename(file_path)
         output_filename = f"{filename.replace('.parquet', '')}_processed.parquet"
-        output_path = os.path.join(output_dir, output_filename)
-
+        print(f"📦 Output file written: {output_filename}")
+        output_path = os.path.join(output_dir.rstrip("/"), output_filename)
+        
+        
         print(f"📥 Loading: s3://{bucket}/{input_key}")
         df = load_parquet_from_s3(s3, bucket, input_key)
 
