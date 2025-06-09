@@ -55,7 +55,7 @@ def lambda_handler(event, context):
             RoleArn=role_arn,
             AppSpecification={
                 "ImageUri": image_uri,
-                "ContainerEntrypoint": ["python3", "/opt/ml/processing/code/preprocessing_kmeans.py"]
+                "ContainerEntrypoint": ["python3", "/opt/ml/processing/code/preprocess_kmeans.py"]
             },
             ProcessingInputs=[
                 {
