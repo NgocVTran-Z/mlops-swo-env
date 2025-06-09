@@ -26,14 +26,8 @@ jobs:
 
       - name: Upload changed .py files to S3
         run: |
-          BASE_DIR="mlops/jobs"
           CHANGED=$(git log -1 --name-only --pretty=format: | grep '\.py$' || true)
           for FILE in $CHANGED; do
-            if [[ $FILE == $BASE_DIR/* ]]; then
-              RELATIVE_PATH=${FILE#$BASE_DIR/}
-              echo "🔁 Uploading $FILE to s3://$S3_BUCKET/$CODE_PREFIX$RELATIVE_PATH"
-              aws s3 cp "$FILE" "s3://$S3_BUCKET/$CODE_PREFIX$RELATIVE_PATH"
-            else
-              echo "⚠️ Skipping $FILE because it's outside $BASE_DIR"
-            fi
+            echo "🔁 Uploading $FILE to s3://$S3_BUCKET/$CODE_PREFIX$FILE"
+            aws s3 cp "$FILE" "s3://$S3_BUCKET/$CODE_PREFIX$FILE"
           done
