@@ -61,7 +61,7 @@ def lambda_handler(event, context):
                 {
                     "InputName": "code",
                     "S3Input": {
-                        "S3Uri": f"s3://{bucket}/{code_prefix}",
+                        "S3Uri": f"s3://{bucket}/{code_prefix}01_preprocessing_kmeans/",
                         "LocalPath": "/opt/ml/processing/code",
                         "S3DataType": "S3Prefix",
                         "S3InputMode": "File"
