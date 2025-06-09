@@ -49,6 +49,7 @@ def lambda_handler(event, context):
         # Submit SageMaker processing job
         job_name = f"preprocess-kmeans-{uuid.uuid4().hex[:8]}"
         output_uri = f"s3://{bucket}/{output_prefix}/"
+        print("Output URI:", output_uri)
 
         sagemaker.create_processing_job(
             ProcessingJobName=job_name,
