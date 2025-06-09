@@ -21,7 +21,8 @@ def lambda_handler(event, context):
         image_uri = os.environ["PROCESSING_IMAGE_URI"]
         bucket = os.environ["S3_BUCKET"]
         code_prefix = os.environ["CODE_PREFIX"]
-        data_prefix = os.environ["DATA_PREFIX"]
+        data_prefix =  os.environ["DATA_PREFIX"]
+        output_prefix = os.environ["OUTPUT_PREFIX"]
 
         # Collect all parquet files from all folders
         all_files = []
@@ -42,7 +43,7 @@ def lambda_handler(event, context):
 
         # Submit SageMaker processing job
         job_name = f"preprocess-kmeans-{uuid.uuid4().hex[:8]}"
-        output_uri = f"s3://{bucket}/inference_result/"
+        output_uri = f"s3://{bucket}/{output_prefix}/"
 
         sagemaker.create_processing_job(
             ProcessingJobName=job_name,

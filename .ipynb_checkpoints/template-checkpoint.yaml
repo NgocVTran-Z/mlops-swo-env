@@ -33,6 +33,7 @@ Resources:
           CODE_PREFIX: !Ref CodePrefix
           S3_BUCKET: !Ref S3Bucket
           DATA_PREFIX: mlops/raw_data/
+          OUTPUT_PREFIX: mlops/pipelines/01_preprocessing_kmeans/
 
       Events:
         ApiTrigger:
