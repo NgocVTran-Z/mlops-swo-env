@@ -20,7 +20,7 @@ def main():
     data_prefix = os.environ["DATA_PREFIX"]
 
     speed_tag = json.loads(os.environ.get("SPEED_TAG", "[]"))
-    print(f"🚀 Speed tags selected: {speed_tag}")
+    print(f"🚀 Speed tags selected: {speed_tag} !!!")
 
     
     # Output directory for SageMaker to auto-upload to S3
