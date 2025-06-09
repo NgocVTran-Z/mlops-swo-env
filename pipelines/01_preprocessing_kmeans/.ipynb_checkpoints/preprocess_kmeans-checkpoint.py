@@ -19,6 +19,10 @@ def main():
     input_files = json.loads(os.environ["INPUT_FILES"])
     data_prefix = os.environ["DATA_PREFIX"]
 
+    speed_tag = json.loads(os.environ.get("SPEED_TAG", "[]"))
+    print(f"🚀 Speed tags selected: {speed_tag}")
+
+    
     # Output directory for SageMaker to auto-upload to S3
     output_dir = "/opt/ml/processing/output"
 

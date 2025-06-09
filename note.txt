@@ -3,5 +3,19 @@ https://gww8r73ofa.execute-api.us-east-1.amazonaws.com/Prod/trigger-preprocess
 
 # API Gateway input json
 {
-  "folders": ["2024-01", "2024-02"]
+  "folders": ["2024-01", "2024-02"],
+  "speed_tag": ["DWA", "DWB"]
 }
+
+
+# CLI
+curl -X POST https://gww8r73ofa.execute-api.us-east-1.amazonaws.com/Prod/trigger-preprocess \
+  -H "Content-Type: application/json" \
+  --data-binary @inputs/01_pipeline_input.json
+
+# CLI 2
+curl -X POST https://gww8r73ofa.execute-api.us-east-1.amazonaws.com/Prod/trigger-preprocess \
+  -H "Content-Type: application/json" \
+  -d '{"folders": ["2024-01", "2024-02"]}'
+
+
