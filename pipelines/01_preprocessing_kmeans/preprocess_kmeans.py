@@ -44,15 +44,17 @@ def main():
             print(f"⚠️ Skipping {filename} — no 'value' column found.")
             continue
 
-        # Apply transformation
-        df = internal_preprocessing(df, filename)
-
-        # Take top 5 rows
-        df_head = df.head(3)
-
-        # Save locally to be picked up by SageMaker
-        print(f"📤 Saving to: {output_path}")
-        df_head.to_parquet(output_path, index=False)
+        for tag in speed_tag:
+            # Apply transformation
+            df = internal_preprocessing(df, filename, tag)
+            print("internal preprocessed:", df.shape)
+            
+            # Take top 5 rows
+            df_head = df.head(3)
+    
+            # Save locally to be picked up by SageMaker
+            print(f"📤 Saving to: {output_path}")
+            df_head.to_parquet(output_path, index=False)
 
     print("✅ SageMaker preprocessing completed.")
 
