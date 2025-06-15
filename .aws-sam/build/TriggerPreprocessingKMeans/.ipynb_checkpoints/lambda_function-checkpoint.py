@@ -6,22 +6,17 @@ sagemaker_client = boto3.client("sagemaker")
 
 def lambda_handler(event, context):
     print("Event received:", event)
-
-    # Handle wrapped event from API Gateway test invoke
+    
     if 'body' in event:
         try:
             event = json.loads(event['body'])
         except Exception as e:
             print("Failed to parse body:", e)
 
-    # Extract input parameters from the API payload
-    input_bucket = event["input_bucket"]
-    input_key = event["input_key"]
-    model_output_key = event["model_output_key"]
-    clustered_output_key = event["clustered_output_key"]
-    n_clusters = event.get("n_clusters", 5)
+    folders = event["folders"]
+    speed_tag = event.get("speed_tag", [])
 
-    processing_job_name = f"training-kmeans-job-{context.aws_request_id}"
+    processing_job_name = f"preprocessing-kmeans-job-{context.aws_request_id}"
 
     response = sagemaker_client.create_processing_job(
         ProcessingJobName=processing_job_name,
@@ -37,12 +32,7 @@ def lambda_handler(event, context):
             "ImageUri": os.environ["PROCESSING_IMAGE_URI"],
             "ContainerEntrypoint": [
                 "python3",
-                "/opt/ml/processing/code/pipelines/02_training_kmeans/train_kmeans.py",
-                "--input_bucket", input_bucket,
-                "--input_key", input_key,
-                "--model_output_key", model_output_key,
-                "--clustered_output_key", clustered_output_key,
-                "--n_clusters", str(n_clusters)
+                "/opt/ml/processing/code/pipelines/01_preprocessing_kmeans/preprocess_kmeans.py"
             ]
         },
         Environment={
@@ -61,7 +51,11 @@ def lambda_handler(event, context):
         ],
         ProcessingOutputConfig={
             "Outputs": []
-        }
+        },
+        Arguments=[
+            "--folders", ",".join(folders),
+            "--speed_tag", ",".join(speed_tag)
+        ]
     )
 
     print("Started SageMaker Processing Job:", processing_job_name)
