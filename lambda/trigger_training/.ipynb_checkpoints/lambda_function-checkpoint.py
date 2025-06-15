@@ -7,6 +7,13 @@ sagemaker_client = boto3.client("sagemaker")
 def lambda_handler(event, context):
     print("Event received:", event)
     
+    # Handle wrapped event when using API Gateway Test Invoke
+    if 'body' in event:
+        try:
+            event = json.loads(event['body'])
+        except Exception as e:
+            print("Failed to parse body:", e)
+
     # Extract input parameters from the API payload
     input_bucket = event["input_bucket"]
     input_key = event["input_key"]
