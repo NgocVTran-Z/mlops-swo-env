@@ -60,6 +60,7 @@ Resources:
             Fn::Sub: ${CodePrefix}02_training_kmeans/
           S3_BUCKET:
             Ref: S3Bucket
+          CODE_S3_URI: s3://swo-ngoctran-public/mlops/jobs/02_training_kmeans/
       Events:
         ApiTrigger:
           Type: Api
