@@ -34,10 +34,6 @@ def internal_preprocessing(df, filename, tag):
     # get mapping tag name from the input tag
     digital_tag = mapping_tags["Digital"][tag]
     speed_tag = mapping_tags["Speed"][tag]
-    # cloudwatch log debug
-    print("digital tag", digital_tag)
-    print("speed tag", speed_tag)
-
     
     df_digital = df[df["tag_name"]==digital_tag]
     df_speed = df[df["tag_name"]==speed_tag]
@@ -45,8 +41,6 @@ def internal_preprocessing(df, filename, tag):
     # transform raw df to df with every-single-second datapoints
     df_digital_ = transform(df_digital)
     df_speed_ = transform(df_speed)
-    print("Transform: df_digital", df_digital_.shape)
-    print("Transform: df_speed", df_speed_.shape)
     
     # get the interval of digital df
     df_digital_interval = get_interval_from_transformed(df_digital_)
@@ -59,9 +53,9 @@ def internal_preprocessing(df, filename, tag):
     print("speed tag", speed_tag)
     print("Transform: df_digital", df_digital_.shape)
     print("Transform: df_speed", df_speed_.shape)
-    print("Invertal digital", df_digital_interval.head())
+    print("Invertal digital", df_digital_interval.shape)
     print("Filtered speed", filtered_speed.shape)
-    
+    print("Filtered speed columns:", filtered_speed.columns)
     return df
 
 
