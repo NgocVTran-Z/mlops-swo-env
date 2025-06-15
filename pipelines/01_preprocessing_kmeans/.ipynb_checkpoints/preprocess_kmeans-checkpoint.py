@@ -49,12 +49,13 @@ def main():
             df = internal_preprocessing(df, filename, tag)
             print("internal preprocessed:", df.shape)
             
-            # Take top 5 rows
-            df_head = df.head(3)
+            # # Take top 5 rows
+            # df_head = df.head(3)
     
             # Save locally to be picked up by SageMaker
             print(f"📤 Saving to: {output_path}")
-            df_head.to_parquet(output_path, index=False)
+            # df_head.to_parquet(output_path, index=False)
+            df.to_parquet(output_path, index=False)
 
     print("✅ SageMaker preprocessing completed.")
 

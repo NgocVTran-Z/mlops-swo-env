@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: MLOps - Trigger KMeans Preprocessing
+Description: MLOps - Full Pipeline with Preprocessing + Training KMeans
 
 Parameters:
   ProcessingImageUri:
@@ -9,13 +9,15 @@ Parameters:
 
   CodePrefix:
     Type: String
-    Default: mlops/jobs/01_preprocessing_kmeans/
+    Default: mlops/jobs/
 
   S3Bucket:
     Type: String
     Default: swo-ngoctran-public
 
 Resources:
+
+  ### Pipeline 01 - Preprocessing KMeans
   TriggerPreprocessingKMeans:
     Type: AWS::Serverless::Function
     Properties:
@@ -30,11 +32,10 @@ Resources:
         Variables:
           SAGEMAKER_ROLE_ARN: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
           PROCESSING_IMAGE_URI: !Ref ProcessingImageUri
-          CODE_PREFIX: !Ref CodePrefix
+          CODE_PREFIX: !Sub ${CodePrefix}01_preprocessing_kmeans/
           S3_BUCKET: !Ref S3Bucket
           DATA_PREFIX: mlops/raw_data/
           OUTPUT_PREFIX: mlops/pipelines/01_preprocessing_kmeans/
-
       Events:
         ApiTrigger:
           Type: Api
@@ -42,8 +43,37 @@ Resources:
             Path: /trigger-preprocess
             Method: post
 
+  ### Pipeline 02 - Training KMeans
+  TriggerTrainingKMeans:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: trigger-training-kmeans
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      CodeUri: lambda/trigger_training/
+      Timeout: 120
+      MemorySize: 512
+      Role: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
+      Environment:
+        Variables:
+          SAGEMAKER_ROLE_ARN: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
+          PROCESSING_IMAGE_URI: !Ref ProcessingImageUri
+          CODE_PREFIX: !Sub ${CodePrefix}02_training_kmeans/
+          S3_BUCKET: !Ref S3Bucket
+      Events:
+        ApiTrigger:
+          Type: Api
+          Properties:
+            Path: /trigger-training
+            Method: post
+
 Outputs:
-  ApiEndpoint:
-    Description: "API Gateway endpoint"
+  PreprocessingApiEndpoint:
+    Description: "API Gateway endpoint for Preprocessing"
     Value:
       Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/trigger-preprocess
+
+  TrainingApiEndpoint:
+    Description: "API Gateway endpoint for Training"
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/trigger-training
