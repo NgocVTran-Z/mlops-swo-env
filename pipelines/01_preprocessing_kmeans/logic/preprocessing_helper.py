@@ -27,7 +27,7 @@ mapping_tags = {
 
 
 def internal_preprocessing(df, filename, tag):
-    print("🧠 This is internal logic of preprocessing pipeline")
+    print("🧠 This is internal logic of preprocessing pipeline", tag)
     # df["value"] = df["value"] * 200
     # print(f"🔍 Preview of {filename}:\n", df.head())
 
@@ -63,6 +63,32 @@ def internal_preprocessing(df, filename, tag):
     print("Filtered speed", filtered_speed.shape)
     
     return df
+
+
+
+def get_interval_from_transformed(df):
+    
+    intervals = []
+    start_time = None
+    values = []
+    
+    for i in range(len(df)):
+        if df.iloc[i]["value"] != 0:
+            if start_time is None:
+                start_time = df.iloc[i]['time_utc']
+                value = df.iloc[i]["value"].item()
+        else:
+            if start_time is not None:
+                intervals.append({'from': start_time, 
+                                  'to': df.iloc[i]['time_utc'], 
+                                  "value": value})
+                start_time = None
+
+    if start_time is not None:
+        print("start time has some values")
+
+    df_intervals = pd.DataFrame(intervals)
+    return df_intervals
 
 
 
