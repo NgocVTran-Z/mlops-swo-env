@@ -1,0 +1,7 @@
+{
+  "input_bucket": "swo-ngoctran-public",
+  "input_key": "mlops/pipelines/01_preprocessing_kmeans/part-00000-234ad20d-73d5-4a30-9b8d-95fd9b186605-c000.snappy_processed.parquet",
+  "model_output_key": "mlops/models/kmeans/model.joblib",
+  "clustered_output_key": "mlops/pipelines/02_training_kmeans/clustered_output.parquet",
+  "n_clusters": 5
+}
