@@ -1,0 +1,6 @@
+{
+  "analog_tag": "TAG123",
+  "motor": "DWA",
+  "input_bucket": "swo-ngoctran-public",
+  "input_key": "mlops/pipelines/03_training_rcf/input_file.parquet"
+}

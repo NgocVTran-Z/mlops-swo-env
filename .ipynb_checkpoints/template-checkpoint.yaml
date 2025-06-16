@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: MLOps - Trigger KMeans Preprocessing + Training
+Description: MLOps - Trigger All Pipelines
 
 Parameters:
   ProcessingImageUri:
@@ -62,6 +62,29 @@ Resources:
           Type: Api
           Properties:
             Path: /trigger-training
+            Method: post
+
+  TriggerTrainingRCF:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: trigger-training-rcf
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      CodeUri: lambda/trigger_training_rcf/
+      Timeout: 300
+      MemorySize: 512
+      Role: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
+      Environment:
+        Variables:
+          SAGEMAKER_ROLE_ARN: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
+          S3_BUCKET: !Ref S3Bucket
+          CODE_PREFIX: mlops/jobs/03_training_rcf/
+
+      Events:
+        ApiTrigger:
+          Type: Api
+          Properties:
+            Path: /trigger-training-rcf
             Method: post
 
 Outputs:
