@@ -13,6 +13,7 @@ Parameters:
 
 Resources:
 
+  # 01 Preprocessing KMeans
   TriggerPreprocessingKMeans:
     Type: AWS::Serverless::Function
     Properties:
@@ -31,7 +32,6 @@ Resources:
           S3_BUCKET: !Ref S3Bucket
           DATA_PREFIX: mlops/raw_data/
           OUTPUT_PREFIX: mlops/pipelines/01_preprocessing_kmeans/
-
       Events:
         ApiTrigger:
           Type: Api
@@ -39,6 +39,7 @@ Resources:
             Path: /trigger-preprocess
             Method: post
 
+  # 02 Training KMeans
   TriggerTrainingKMeans:
     Type: AWS::Serverless::Function
     Properties:
@@ -56,7 +57,6 @@ Resources:
           CODE_PREFIX: mlops/jobs/02_training_kmeans/
           S3_BUCKET: !Ref S3Bucket
           OUTPUT_PREFIX: mlops/pipelines/02_training_kmeans/
-
       Events:
         ApiTrigger:
           Type: Api
@@ -64,6 +64,31 @@ Resources:
             Path: /trigger-training
             Method: post
 
+  # 03 Preprocessing RCF
+  TriggerPreprocessingRCF:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: trigger-preprocessing-rcf
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      CodeUri: lambda/trigger_preprocessing_rcf/
+      Timeout: 300
+      MemorySize: 512
+      Role: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
+      Environment:
+        Variables:
+          SAGEMAKER_ROLE_ARN: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
+          PROCESSING_IMAGE_URI: !Ref ProcessingImageUri
+          CODE_PREFIX: mlops/jobs/03_preprocessing_rcf/
+          S3_BUCKET: !Ref S3Bucket
+      Events:
+        ApiTrigger:
+          Type: Api
+          Properties:
+            Path: /trigger-preprocessing-rcf
+            Method: post
+
+  # 04 Training RCF 
   TriggerTrainingRCF:
     Type: AWS::Serverless::Function
     Properties:
@@ -77,9 +102,9 @@ Resources:
       Environment:
         Variables:
           SAGEMAKER_ROLE_ARN: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
+          PROCESSING_IMAGE_URI: !Ref ProcessingImageUri
+          CODE_PREFIX: mlops/jobs/04_training_rcf/
           S3_BUCKET: !Ref S3Bucket
-          CODE_PREFIX: mlops/jobs/03_training_rcf/
-
       Events:
         ApiTrigger:
           Type: Api

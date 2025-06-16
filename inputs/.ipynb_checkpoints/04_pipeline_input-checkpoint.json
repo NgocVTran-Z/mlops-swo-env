@@ -1,0 +1,5 @@
+{
+  "analog_tag": "DWA_RTD1_TEMP",
+  "motor": "DWA",
+  "input_s3_uri": "s3://swo-ngoctran-public/mlops/pipelines/04_training_rcf/input_file.csv"
+}

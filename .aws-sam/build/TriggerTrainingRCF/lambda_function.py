@@ -2,9 +2,9 @@ import os
 import json
 import uuid
 import boto3
+import urllib.parse
 
 sagemaker = boto3.client("sagemaker")
-s3 = boto3.client("s3")
 
 def lambda_handler(event, context):
     print("🟢 Lambda triggered.")
@@ -15,11 +15,15 @@ def lambda_handler(event, context):
 
         analog_tag = body.get("analog_tag")
         motor = body.get("motor")
-        input_bucket = body.get("input_bucket")
-        input_key = body.get("input_key")
+        input_s3_uri = body.get("input_s3_uri")
 
-        if not analog_tag or not motor or not input_bucket or not input_key:
+        if not analog_tag or not motor or not input_s3_uri:
             raise ValueError("Missing one of required input parameters.")
+
+        # Parse input_s3_uri to bucket and key
+        parsed = urllib.parse.urlparse(input_s3_uri)
+        input_bucket = parsed.netloc
+        input_key = parsed.path.lstrip("/")
 
         role_arn = os.environ["SAGEMAKER_ROLE_ARN"]
         image_uri = os.environ["PROCESSING_IMAGE_URI"]
@@ -36,7 +40,7 @@ def lambda_handler(event, context):
             RoleArn=role_arn,
             AppSpecification={
                 "ImageUri": image_uri,
-                "ContainerEntrypoint": ["python3", "/opt/ml/processing/code/pipelines/03_training_rcf/train_rcf.py"]
+                "ContainerEntrypoint": ["python3", "/opt/ml/processing/code/pipelines/04_training_rcf/train_rcf.py"]
             },
             ProcessingInputs=[
                 {
