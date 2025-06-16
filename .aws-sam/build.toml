@@ -18,4 +18,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["TriggerTrainingKMeans"]
 
+[function_build_definitions.aa9bdb98-0aa6-413a-a96e-7b9c01776e21]
+codeuri = "/home/sagemaker-user/mlops-swo-env/lambda/trigger_training_rcf"
+runtime = "python3.12"
+architecture = "x86_64"
+handler = "lambda_function.lambda_handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["TriggerTrainingRCF"]
+
 [layer_build_definitions]

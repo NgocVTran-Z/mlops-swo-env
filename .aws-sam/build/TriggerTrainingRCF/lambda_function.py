@@ -36,7 +36,7 @@ def lambda_handler(event, context):
             RoleArn=role_arn,
             AppSpecification={
                 "ImageUri": image_uri,
-                "ContainerEntrypoint": ["python3", "/opt/ml/processing/code/pipelines/03_training_rcf/preprocessing_rcf.py"]
+                "ContainerEntrypoint": ["python3", "/opt/ml/processing/code/pipelines/03_training_rcf/train_rcf.py"]
             },
             ProcessingInputs=[
                 {
