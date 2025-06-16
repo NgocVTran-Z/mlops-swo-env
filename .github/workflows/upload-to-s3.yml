@@ -1,19 +1,19 @@
-name: Sync Python files to S3 on push
+name: Sync pipelines to S3 on push
 
 on:
   push:
     paths:
-      - '**.py'
+      - 'pipelines/**'
 
 jobs:
-  upload-to-s3:
+  sync-to-s3:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Load and export env vars
+      - name: Load env vars
         run: |
           cat config/global.env >> $GITHUB_ENV
 
@@ -24,10 +24,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Upload changed .py files to S3
+      - name: Discover and sync all pipelines automatically
         run: |
-          CHANGED=$(git log -1 --name-only --pretty=format: | grep '\.py$' || true)
-          for FILE in $CHANGED; do
-            echo "🔁 Uploading $FILE to s3://$S3_BUCKET/$CODE_PREFIX$FILE"
-            aws s3 cp "$FILE" "s3://$S3_BUCKET/$CODE_PREFIX$FILE"
+          for dir in pipelines/*; do
+            pipeline_name=$(basename "$dir")
+            s3_path="mlops/jobs/${pipeline_name}/pipelines/${pipeline_name}/"
+            echo "🔁 Syncing $dir to s3://$S3_BUCKET/$s3_path"
+            aws s3 sync "$dir" "s3://$S3_BUCKET/$s3_path"
           done
