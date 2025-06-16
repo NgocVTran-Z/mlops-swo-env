@@ -7,10 +7,6 @@ Parameters:
     Type: String
     Default: 683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3
 
-  CodePrefix:
-    Type: String
-    Default: mlops/jobs/
-
   S3Bucket:
     Type: String
     Default: swo-ngoctran-public
@@ -31,7 +27,7 @@ Resources:
         Variables:
           SAGEMAKER_ROLE_ARN: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
           PROCESSING_IMAGE_URI: !Ref ProcessingImageUri
-          CODE_PREFIX: !Sub ${CodePrefix}01_preprocessing_kmeans/
+          CODE_PREFIX: mlops/jobs/01_preprocessing_kmeans/
           S3_BUCKET: !Ref S3Bucket
           DATA_PREFIX: mlops/raw_data/
           OUTPUT_PREFIX: mlops/pipelines/01_preprocessing_kmeans/
@@ -57,7 +53,7 @@ Resources:
         Variables:
           SAGEMAKER_ROLE_ARN: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
           PROCESSING_IMAGE_URI: !Ref ProcessingImageUri
-          CODE_PREFIX: !Sub ${CodePrefix}02_training_kmeans/
+          CODE_PREFIX: mlops/jobs/02_training_kmeans/
           S3_BUCKET: !Ref S3Bucket
           OUTPUT_PREFIX: mlops/pipelines/02_training_kmeans/
 

@@ -9,4 +9,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["TriggerPreprocessingKMeans"]
 
+[function_build_definitions.015456ca-a36f-413a-916b-d3a18e56074c]
+codeuri = "/home/sagemaker-user/mlops-swo-env/lambda/trigger_training"
+runtime = "python3.12"
+architecture = "x86_64"
+handler = "lambda_function.lambda_handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["TriggerTrainingKMeans"]
+
 [layer_build_definitions]
