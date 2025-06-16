@@ -112,6 +112,32 @@ Resources:
             Path: /trigger-training-rcf
             Method: post
 
+  # 05 Inference RCF
+  TriggerInferenceRCF:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: trigger-inference-rcf
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      CodeUri: lambda/trigger_inference_rcf/
+      Timeout: 300
+      MemorySize: 512
+      Role: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
+      Environment:
+        Variables:
+          SAGEMAKER_ROLE_ARN: arn:aws:iam::975049948583:role/LambdaSageMakerInferencePolicy
+          PROCESSING_IMAGE_URI: !Ref ProcessingImageUri
+          CODE_PREFIX: mlops/jobs/05_inference_rcf/
+          S3_BUCKET: !Ref S3Bucket
+          OUTPUT_PREFIX: mlops/pipelines/05_inference_rcf/output/
+          ENDPOINT_NAME: randomcutforest-2025-06-16-04-12-03-443
+      Events:
+        ApiTrigger:
+          Type: Api
+          Properties:
+            Path: /trigger-inference-rcf
+            Method: post
+
 Outputs:
   ApiEndpoint:
     Description: "API Gateway endpoint"

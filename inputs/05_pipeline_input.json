@@ -1,0 +1,4 @@
+{
+  "input_s3_uri": "s3://swo-ngoctran-public/mlops/raw_data/2024-01/test_data_1.csv",
+  "tag_name": "DWA_RTD1_TEMP"
+}
