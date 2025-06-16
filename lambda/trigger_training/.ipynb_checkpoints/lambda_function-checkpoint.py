@@ -12,7 +12,6 @@ def lambda_handler(event, context):
     try:
         body = json.loads(event.get("body", "{}"))
 
-        # Parse input from request payload
         input_bucket = body.get("input_bucket")
         input_key = body.get("input_key")
         model_output_key = body.get("model_output_key")
@@ -22,14 +21,16 @@ def lambda_handler(event, context):
         if not input_bucket or not input_key or not model_output_key or not clustered_output_key:
             raise ValueError("Missing one of required input parameters.")
 
-        # Load env vars
         role_arn = os.environ["SAGEMAKER_ROLE_ARN"]
         image_uri = os.environ["PROCESSING_IMAGE_URI"]
         bucket = os.environ["S3_BUCKET"]
         code_prefix = os.environ["CODE_PREFIX"]
+        output_prefix = os.environ["OUTPUT_PREFIX"]
 
-        # Submit SageMaker processing job
         job_name = f"training-kmeans-{uuid.uuid4().hex[:8]}"
+        output_uri = f"s3://{bucket}/{output_prefix.rstrip('/')}/"
+
+        print("Output URI:", output_uri)
 
         sagemaker.create_processing_job(
             ProcessingJobName=job_name,
@@ -57,7 +58,7 @@ def lambda_handler(event, context):
                     {
                         "OutputName": "output-1",
                         "S3Output": {
-                            "S3Uri": f"s3://{bucket}/{code_prefix}/dummy-output/",
+                            "S3Uri": output_uri,
                             "LocalPath": "/opt/ml/processing/output",
                             "S3UploadMode": "EndOfJob"
                         }
@@ -65,7 +66,7 @@ def lambda_handler(event, context):
                 ]
             },
             Environment={
-                "INPUT_BUCKET": input_bucket,
+                "S3_BUCKET": input_bucket,
                 "INPUT_KEY": input_key,
                 "MODEL_OUTPUT_KEY": model_output_key,
                 "CLUSTERED_OUTPUT_KEY": clustered_output_key,
