@@ -27,7 +27,7 @@ mapping_tags = {
 
 
 def internal_preprocessing(df, filename, tag):
-    print("🧠 This is internal logic of preprocessing pipeline", tag)
+    print("This is internal logic of preprocessing pipeline", tag)
 
     # Get mapping tag names
     digital_tag = mapping_tags["Digital"][tag]
