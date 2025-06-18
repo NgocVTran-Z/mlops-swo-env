@@ -6,8 +6,6 @@ from io import BytesIO
 
 
 
-#------ read all /parquet files in multiple folder leve
-
 
 def load_parquet_from_s3(s3_client, bucket, key):
     """
