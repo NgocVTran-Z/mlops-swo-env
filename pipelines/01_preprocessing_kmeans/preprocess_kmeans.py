@@ -9,10 +9,11 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../shared")))
 
 from logic.preprocessing_helper import internal_preprocessing
-from utils.general_utils import load_all_parquet_files  # Only keep load, not save
+from utils.general_utils import load_all_parquet_files
+
 
 def main():
-    print("✅ SageMaker preprocessing script started ...")
+    print("SageMaker preprocessing script started ...")
 
     # Load environment variables
     bucket = os.environ["S3_BUCKET"]
@@ -40,23 +41,20 @@ def main():
         df = load_all_parquet_files(s3, bucket, input_key)
         
         if "value" not in df.columns:
-            print(f"⚠️ Skipping {filename} — no 'value' column found.")
+            print(f"Skipping {filename} — no 'value' column found.")
             continue
 
         for tag in speed_tag:
             # Apply transformation
             df = internal_preprocessing(df, filename, tag)
             print("internal preprocessed:", df.shape)
+            print("columns:", df.columns)
             
-            # # Take top 5 rows
-            # df_head = df.head(3)
-    
             # Save locally to be picked up by SageMaker
-            print(f"📤 Saving to: {output_path}")
-            # df_head.to_parquet(output_path, index=False)
+            print(f"Saving to: {output_path}")
             df.to_parquet(output_path, index=False)
 
-    print("✅ SageMaker preprocessing completed.")
+    print("SageMaker preprocessing completed.")
 
 if __name__ == "__main__":
     main()
