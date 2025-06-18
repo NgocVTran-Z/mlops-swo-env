@@ -28,35 +28,32 @@ mapping_tags = {
 
 def internal_preprocessing(df, filename, tag):
     print("🧠 This is internal logic of preprocessing pipeline", tag)
-    # df["value"] = df["value"] * 200
-    # print(f"🔍 Preview of {filename}:\n", df.head())
 
-    # get mapping tag name from the input tag
+    # Get mapping tag names
     digital_tag = mapping_tags["Digital"][tag]
     speed_tag = mapping_tags["Speed"][tag]
-    
-    df_digital = df[df["tag_name"]==digital_tag]
-    df_speed = df[df["tag_name"]==speed_tag]
 
-    # transform raw df to df with every-single-second datapoints
-    df_digital_ = transform(df_digital)
-    df_speed_ = transform(df_speed)
-    
-    # get the interval of digital df
+    # Transform digital and speed data directly from original df (no intermediate slice)
+    df_digital_ = transform(df.loc[df["tag_name"] == digital_tag].copy())
+    df_speed_ = transform(df.loc[df["tag_name"] == speed_tag].copy())
+
+    # Get intervals from transformed digital tag
     df_digital_interval = get_interval_from_transformed(df_digital_)
-    
-    # filtered speed
+
+    # Filter speed data by intervals
     filtered_speed = filter_by_intervals(df_digital_interval, df_speed_)
 
-    # cloudwatch log debug
+    # Log for debugging
     print("digital tag", digital_tag)
     print("speed tag", speed_tag)
     print("Transform: df_digital", df_digital_.shape)
     print("Transform: df_speed", df_speed_.shape)
-    print("Invertal digital", df_digital_interval.shape)
+    print("Interval digital", df_digital_interval.shape)
     print("Filtered speed", filtered_speed.shape)
     print("Filtered speed columns:", filtered_speed.columns)
-    return df
+
+    return filtered_speed
+
 
 
 

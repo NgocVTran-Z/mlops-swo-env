@@ -30,21 +30,25 @@ def get_current_timestamp_string() -> str:
 
 def transform(df):
     """
-    transform the raw input df into df with datapoint in every single second
+    Transform the raw input df into df with datapoint in every single second.
+    Works directly on the original df (in-place safe).
     """
+    import pandas as pd
+    import mlflow
+
     # Convert data types and sort
-    df['value'] = df['value'].astype('float32')
-    df['time_utc'] = pd.to_datetime(df['time_utc'])
-    df = df.sort_values(by='time_utc').reset_index(drop=True)
+    df.loc[:, 'value'] = df['value'].astype('float32')
+    df.loc[:, 'time_utc'] = pd.to_datetime(df['time_utc'])
+    df.sort_values(by='time_utc', inplace=True)
+    df.reset_index(drop=True, inplace=True)
 
     # Check if DataFrame is empty
     if df.empty:
         mlflow.log_param("data_status", "empty")
         mlflow.log_metric("rows_processed", 0)
         print("⚠️ DataFrame is empty. Skipping transform.")
-        return df  # hoặc return df nếu bạn muốn vẫn trả về một DataFrame rỗng
-        
-    
+        return df
+
     # Handle the case where the first value is 0
     if df.iloc[0]['value'] == 0:
         non_zero_idx = df[df['value'] != 0].index
@@ -72,6 +76,7 @@ def transform(df):
     df_expanded = pd.DataFrame(expanded_data)
     
     return df_expanded
+
 
 
 
