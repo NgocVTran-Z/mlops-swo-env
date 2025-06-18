@@ -32,32 +32,36 @@ def main():
     for file_path in input_files:
         input_key = os.path.join(data_prefix, file_path)
         filename = os.path.basename(file_path)
-        output_filename = f"{filename.replace('.parquet', '')}_processed.parquet"
-        print(f"Output file written: {output_filename}")
-        output_path = os.path.join(output_dir.rstrip("/"), output_filename)
-        
-        
+        input_subfolder = os.path.dirname(file_path)
+    
+        s3 = boto3.client("s3")
         print(f"📥 Loading: s3://{bucket}/{input_key}")
         df = load_parquet_from_s3(s3, bucket, input_key)
-
+    
         if "value" not in df.columns:
             print(f"Skipping {filename} — no 'value' column found.")
             continue
-
-        for tag in speed_tag:
-            # Apply transformation
-            df = internal_preprocessing(df, filename, tag)
-            print("internal preprocessed:", df.shape)
-            
-            # # Take top 5 rows
-            # df_head = df.head(3)
     
-            # Save locally to be picked up by SageMaker
+        for tag in speed_tag:
+            df_tag = internal_preprocessing(df, filename, tag)
+    
+            # Embed tag into the output filename
+            output_filename = f"{filename.replace('.parquet', '')}_{tag}_processed.parquet"
+            output_path = os.path.join(output_dir.rstrip("/"), input_subfolder, output_filename)
+    
+            # Ensure output folder exists
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    
             print(f"Saving to: {output_path}")
-            # df_head.to_parquet(output_path, index=False)
-            df.to_parquet(output_path, index=False)
+            df_tag.to_parquet(output_path, index=False)
 
     print("✅ SageMaker preprocessing completed.")
 
+
+
 if __name__ == "__main__":
     main()
+
+
+
+    
