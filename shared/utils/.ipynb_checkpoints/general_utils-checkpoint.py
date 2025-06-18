@@ -6,6 +6,26 @@ from io import BytesIO
 
 
 
+#------ read all /parquet files in multiple folder leve
+import boto3
+import pandas as pd
+from io import BytesIO
+
+
+
+def list_parquet_keys(s3_client, bucket, prefix=""):
+    """
+    Recursively list all .parquet keys under a bucket and prefix.
+    """
+    keys = []
+    paginator = s3_client.get_paginator("list_objects_v2")
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+        for obj in page.get("Contents", []):
+            if obj["Key"].endswith(".parquet"):
+                keys.append(obj["Key"])
+    return keys
+
+    
 
 def load_parquet_from_s3(s3_client, bucket, key):
     """
@@ -16,6 +36,23 @@ def load_parquet_from_s3(s3_client, bucket, key):
 
 
 
+def load_all_parquet_files(s3_client, bucket, prefix=""):
+    """
+    Load and concatenate all .parquet files under a given bucket/prefix.
+    """
+    keys = list_parquet_keys(s3_client, bucket, prefix)
+    print(f"Found {len(keys)} .parquet files under s3://{bucket}/{prefix}")
+    dataframes = [load_parquet_from_s3(s3_client, bucket, key) for key in keys]
+    return pd.concat(dataframes, ignore_index=True) if dataframes else pd.DataFrame()
+
+
+
+# def load_parquet_from_s3(s3_client, bucket, key):
+#     """
+#     Load a .parquet file from S3 into a pandas DataFrame.
+#     """
+#     response = s3_client.get_object(Bucket=bucket, Key=key)
+#     return pd.read_parquet(BytesIO(response["Body"].read()))
 
 
 
@@ -28,6 +65,7 @@ def get_current_timestamp_string() -> str:
     return datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
+    
 def transform(df):
     """
     transform the raw input df into df with datapoint in every single second

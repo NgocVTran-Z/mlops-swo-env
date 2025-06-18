@@ -20,9 +20,7 @@ def main():
     data_prefix = os.environ["DATA_PREFIX"]
 
     speed_tag = json.loads(os.environ.get("SPEED_TAG", "[]"))
-    print(f"🚀 Speed tags selected: {speed_tag} !!!")
-    for tag in speed_tag:
-        print(tag)
+    print(f"Speed tags selected: {speed_tag} !!!")
     
     # Output directory for SageMaker to auto-upload to S3
     output_dir = "/opt/ml/processing/output"
@@ -33,13 +31,14 @@ def main():
         input_key = os.path.join(data_prefix, file_path)
         filename = os.path.basename(file_path)
         output_filename = f"{filename.replace('.parquet', '')}_processed.parquet"
-        print(f"📦 Output file written: {output_filename}")
+        print(f"Output file written: {output_filename}")
         output_path = os.path.join(output_dir.rstrip("/"), output_filename)
         
         
-        print(f"📥 Loading: s3://{bucket}/{input_key}")
-        df = load_parquet_from_s3(s3, bucket, input_key)
-
+        print(f"Loading: s3://{bucket}/{input_key}")
+        # df = load_parquet_from_s3(s3, bucket, input_key)
+        df = load_all_parquet_files(s3, bucket, input_key)
+        
         if "value" not in df.columns:
             print(f"⚠️ Skipping {filename} — no 'value' column found.")
             continue
