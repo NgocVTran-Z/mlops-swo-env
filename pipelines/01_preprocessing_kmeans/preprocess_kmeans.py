@@ -9,7 +9,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../shared")))
 
 from logic.preprocessing_helper import internal_preprocessing
-from utils.general_utils import load_parquet_from_s3  # Only keep load, not save
+from utils.general_utils import load_all_parquet_files  # Only keep load, not save
 
 def main():
     print("✅ SageMaker preprocessing script started ...")
