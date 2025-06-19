@@ -2,6 +2,9 @@ import pandas as pd
 import sys
 import os
 
+import mlflow
+
+
 # Add shared module to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../shared")))
 
@@ -25,9 +28,21 @@ mapping_tags = {
 }
 
 
+#----params--
+tracking_server_arn =  os.environ["TRACKING_SERVER_ARN"]
+mlflow.set_tracking_uri(tracking_server_arn)
+mlflow.set_experiment("01_preprocessing_kmeans")
 
-def internal_preprocessing(df, filename, tag):
-    print("🧠 This is internal logic of preprocessing pipeline", tag)
+
+
+def internal_preprocessing(
+    df, 
+    filename, 
+    tag,
+    output_filename, 
+    output_path                                  
+):
+    print("This is internal logic of preprocessing pipeline", tag)
 
     # Get mapping tag names
     digital_tag = mapping_tags["Digital"][tag]
@@ -50,7 +65,22 @@ def internal_preprocessing(df, filename, tag):
     print("Transform: df_speed", df_speed_.shape)
     print("Interval digital", df_digital_interval.shape)
     print("Filtered speed", filtered_speed.shape)
-    print("Filtered speed columns:", filtered_speed.columns)
+    # print("Filtered speed columns:", filtered_speed.columns)
+
+    with mlflow.start_run(run_name=f"preprocessing_{tag}"):
+        mlflow.set_tag("filename", filename)
+        mlflow.set_tag("tag", tag)
+        mlflow.log_param("digital_tag", digital_tag)
+        mlflow.log_param("speed_tag", speed_tag)
+        mlflow.log_metric("df_digital_rows", df_digital_.shape[0])
+        mlflow.log_metric("df_speed_rows", df_speed_.shape[0])
+        mlflow.log_metric("interval_count", df_digital_interval.shape[0])
+        mlflow.log_metric("filtered_speed_rows", filtered_speed.shape[0])
+        mlflow.log_metric("filtered_speed_columns", len(filtered_speed.columns))
+        mlflow.log_metric("output_filename", output_filename) 
+        mlflow.log_metric("output_path", output_path)
+        
+        mlflow.end_run()
 
     return filtered_speed
 

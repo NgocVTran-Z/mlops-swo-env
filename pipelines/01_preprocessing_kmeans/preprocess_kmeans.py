@@ -43,15 +43,17 @@ def main():
             continue
     
         for tag in speed_tag:
-            df_tag = internal_preprocessing(df, filename, tag)
+            
     
             # Embed tag into the output filename
             output_filename = f"{filename.replace('.parquet', '')}_{tag}_processed.parquet"
             output_path = os.path.join(output_dir.rstrip("/"), input_subfolder, output_filename)
-    
+            
             # Ensure output folder exists
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    
+
+            df_tag = internal_preprocessing(df, filename, tag, output_filename, output_path)
+            
             print(f"Saving to: {output_path}")
             df_tag.to_parquet(output_path, index=False)
 
