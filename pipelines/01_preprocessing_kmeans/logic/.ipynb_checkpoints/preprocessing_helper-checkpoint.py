@@ -2,6 +2,16 @@ import pandas as pd
 import sys
 import os
 
+
+import subprocess
+import sys
+
+try:
+    import mlflow
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "mlflow==2.12.1"])
+    import mlflow
+
 import mlflow
 
 
