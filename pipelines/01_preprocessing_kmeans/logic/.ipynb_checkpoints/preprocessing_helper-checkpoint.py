@@ -2,16 +2,6 @@ import pandas as pd
 import sys
 import os
 
-
-import subprocess
-import sys
-
-try:
-    import mlflow
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "mlflow==2.12.1"])
-    import mlflow
-
 import mlflow
 
 
@@ -54,6 +44,20 @@ def internal_preprocessing(
 ):
     print("This is internal logic of preprocessing pipeline", tag)
 
+
+    import subprocess
+    import sys
+    
+    try:
+        import mlflow
+        print("imported mlflow")
+    except ImportError:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "mlflow==2.12.1"])
+        import mlflow
+        print("imported mlflow")
+
+        
+
     # Get mapping tag names
     digital_tag = mapping_tags["Digital"][tag]
     speed_tag = mapping_tags["Speed"][tag]
@@ -76,6 +80,9 @@ def internal_preprocessing(
     print("Interval digital", df_digital_interval.shape)
     print("Filtered speed", filtered_speed.shape)
     # print("Filtered speed columns:", filtered_speed.columns)
+
+
+    
 
     with mlflow.start_run(run_name=f"preprocessing_{tag}"):
         mlflow.set_tag("filename", filename)
