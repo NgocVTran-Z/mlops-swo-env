@@ -2,7 +2,7 @@ import pandas as pd
 import sys
 import os
 
-import mlflow
+# import mlflow
 
 
 # Add shared module to path
@@ -44,20 +44,6 @@ def internal_preprocessing(
 ):
     print("This is internal logic of preprocessing pipeline", tag)
 
-
-    import subprocess
-    import sys
-    
-    try:
-        import mlflow
-        print("imported mlflow")
-    except ImportError:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "mlflow==2.12.1"])
-        import mlflow
-        print("imported mlflow")
-
-        
-
     # Get mapping tag names
     digital_tag = mapping_tags["Digital"][tag]
     speed_tag = mapping_tags["Speed"][tag]
@@ -81,23 +67,20 @@ def internal_preprocessing(
     print("Filtered speed", filtered_speed.shape)
     # print("Filtered speed columns:", filtered_speed.columns)
 
-
-    
-
-    with mlflow.start_run(run_name=f"preprocessing_{tag}"):
-        mlflow.set_tag("filename", filename)
-        mlflow.set_tag("tag", tag)
-        mlflow.log_param("digital_tag", digital_tag)
-        mlflow.log_param("speed_tag", speed_tag)
-        mlflow.log_metric("df_digital_rows", df_digital_.shape[0])
-        mlflow.log_metric("df_speed_rows", df_speed_.shape[0])
-        mlflow.log_metric("interval_count", df_digital_interval.shape[0])
-        mlflow.log_metric("filtered_speed_rows", filtered_speed.shape[0])
-        mlflow.log_metric("filtered_speed_columns", len(filtered_speed.columns))
-        mlflow.log_metric("output_filename", output_filename) 
-        mlflow.log_metric("output_path", output_path)
+    # with mlflow.start_run(run_name=f"preprocessing_{tag}"):
+    #     mlflow.set_tag("filename", filename)
+    #     mlflow.set_tag("tag", tag)
+    #     mlflow.log_param("digital_tag", digital_tag)
+    #     mlflow.log_param("speed_tag", speed_tag)
+    #     mlflow.log_metric("df_digital_rows", df_digital_.shape[0])
+    #     mlflow.log_metric("df_speed_rows", df_speed_.shape[0])
+    #     mlflow.log_metric("interval_count", df_digital_interval.shape[0])
+    #     mlflow.log_metric("filtered_speed_rows", filtered_speed.shape[0])
+    #     mlflow.log_metric("filtered_speed_columns", len(filtered_speed.columns))
+    #     mlflow.log_metric("output_filename", output_filename) 
+    #     mlflow.log_metric("output_path", output_path)
         
-        mlflow.end_run()
+    #     mlflow.end_run()
 
     return filtered_speed
 
