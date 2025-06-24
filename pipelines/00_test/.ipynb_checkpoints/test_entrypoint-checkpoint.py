@@ -1,7 +1,32 @@
 # import mlflow
 
+import joblib
+from sagemaker import RandomCutForest
+from sklearn.cluster import KMeans
+from datetime import datetime
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import numpy as np
+
+import sagemaker
+import boto3
+from sagemaker.estimator import Estimator
+from sagemaker.inputs import TrainingInput
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sagemaker.model import Model
+from sagemaker.transformer import Transformer
+
+
+
 def run_test_logic():
     print("🔧 Running test logic...")
+    print("🔧 Test import sagemaker...")
 
     # tracking_uri = "https://t-shqyllgofmce.us-east-1.experiments.sagemaker.aws"
     # mlflow.set_tracking_uri(tracking_uri)

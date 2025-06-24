@@ -45,4 +45,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["TriggerPreprocessingKMeans"]
 
+[function_build_definitions.ea9f3162-ec41-4db0-aa2b-07b999c955ba]
+codeuri = "/home/sagemaker-user/mlops-swo-env/lambda/trigger_test_pipeline"
+runtime = "python3.12"
+architecture = "x86_64"
+handler = "lambda_function.lambda_handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["TriggerTestPipeline"]
+
 [layer_build_definitions]
