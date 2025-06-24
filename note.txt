@@ -48,3 +48,21 @@ if [ -d "shared" ]; then
 fi
 
 echo "✅ Done uploading updated .py files to S3"
+
+
+
+#------ test pipeline script
+mkdir -p pipelines/00_test
+touch pipelines/00_test/test_pipeline.py
+
+mkdir -p pipelines/00_test/logic
+touch pipelines/00_test/logic/test_helper.py
+touch pipelines/00_test/test_entrypoint.py
+
+
+aws s3 cp pipelines/00_test/ s3://swo-ngoctran-public/mlops/jobs/00_test/ --recursive --exclude "*" --include "*.py"
+
+aws s3 cp pipelines/00_test/ s3://swo-ngoctran-public/mlops/jobs/00_test/ --recursive
+
+
+

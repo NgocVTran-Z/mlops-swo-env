@@ -34,17 +34,35 @@ du -sh .aws-sam
 S3_BUCKET="s3-assetcare-bucket"
 BASE_PREFIX="mlops/jobs"
 
-# === Upload tất cả folder trong pipelines/ ===
+# === Upload all folder in pipelines/ ===
 for folder in pipelines/*/; do
   job_name=$(basename "$folder")
   echo "📤 Syncing $folder to s3://$S3_BUCKET/$BASE_PREFIX/$job_name/"
   aws s3 sync "$folder" "s3://$S3_BUCKET/$BASE_PREFIX/$job_name/" --exclude "*" --include "*.py"
 done
 
-# === Upload các file .py trong shared/ (nếu có) ===
+# === Upload all file .py in shared/  ===
 if [ -d "shared" ]; then
   echo "📤 Syncing shared/ to s3://$S3_BUCKET/$BASE_PREFIX/shared/"
   aws s3 sync shared/ "s3://$S3_BUCKET/$BASE_PREFIX/shared/" --exclude "*" --include "*.py"
 fi
 
 echo "✅ Done uploading updated .py files to S3"
+
+
+
+#------ test pipeline script
+mkdir -p pipelines/00_test
+touch pipelines/00_test/test_pipeline.py
+
+mkdir -p pipelines/00_test/logic
+touch pipelines/00_test/logic/test_helper.py
+touch pipelines/00_test/test_entrypoint.py
+
+
+aws s3 cp pipelines/00_test/ s3://swo-ngoctran-public/mlops/jobs/00_test/ --recursive --exclude "*" --include "*.py"
+
+aws s3 cp pipelines/00_test/ s3://swo-ngoctran-public/mlops/jobs/00_test/ --recursive
+
+
+
