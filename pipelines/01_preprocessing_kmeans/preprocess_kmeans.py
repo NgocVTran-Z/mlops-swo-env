@@ -12,7 +12,7 @@ from logic.preprocessing_helper import internal_preprocessing
 from utils.general_utils import load_parquet_from_s3  # Only keep load, not save
 
 def main():
-    print("✅ SageMaker preprocessing script started ...")
+    print("✅ SageMaker preprocessing kmeans script started ...")
 
     # Load environment variables
     bucket = os.environ["S3_BUCKET"]
@@ -57,7 +57,7 @@ def main():
             print(f"Saving to: {output_path}")
             df_tag.to_parquet(output_path, index=False)
 
-    print("✅ SageMaker preprocessing completed.")
+    print("✅ SageMaker preprocessing kmeans completed.")
 
 
 
