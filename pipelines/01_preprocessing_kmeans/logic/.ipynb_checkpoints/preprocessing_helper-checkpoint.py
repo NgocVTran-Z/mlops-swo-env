@@ -29,9 +29,9 @@ mapping_tags = {
 
 
 #----params--
-tracking_server_arn =  os.environ["TRACKING_SERVER_ARN"]
-mlflow.set_tracking_uri(tracking_server_arn)
-mlflow.set_experiment("01_preprocessing_kmeans")
+# tracking_server_arn =  os.environ["TRACKING_SERVER_ARN"]
+# mlflow.set_tracking_uri(tracking_server_arn)
+# mlflow.set_experiment("01_preprocessing_kmeans")
 
 
 
@@ -65,7 +65,7 @@ def internal_preprocessing(
     print("Transform: df_speed", df_speed_.shape)
     print("Interval digital", df_digital_interval.shape)
     print("Filtered speed", filtered_speed.shape)
-    # print("Filtered speed columns:", filtered_speed.columns)
+    print("Filtered speed columns:", filtered_speed.columns)
 
     # with mlflow.start_run(run_name=f"preprocessing_{tag}"):
     #     mlflow.set_tag("filename", filename)
