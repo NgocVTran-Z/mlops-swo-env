@@ -29,9 +29,9 @@ mapping_tags = {
 
 
 #----params--
-# tracking_server_arn =  os.environ["TRACKING_SERVER_ARN"]
-# mlflow.set_tracking_uri(tracking_server_arn)
-# mlflow.set_experiment("01_preprocessing_kmeans")
+tracking_server_arn =  os.environ["TRACKING_SERVER_ARN"]
+mlflow.set_tracking_uri(tracking_server_arn)
+mlflow.set_experiment("01_preprocessing_kmeans")
 
 
 
@@ -67,20 +67,20 @@ def internal_preprocessing(
     print("Filtered speed", filtered_speed.shape)
     print("Filtered speed columns:", filtered_speed.columns)
 
-    # with mlflow.start_run(run_name=f"preprocessing_{tag}"):
-    #     mlflow.set_tag("filename", filename)
-    #     mlflow.set_tag("tag", tag)
-    #     mlflow.log_param("digital_tag", digital_tag)
-    #     mlflow.log_param("speed_tag", speed_tag)
-    #     mlflow.log_metric("df_digital_rows", df_digital_.shape[0])
-    #     mlflow.log_metric("df_speed_rows", df_speed_.shape[0])
-    #     mlflow.log_metric("interval_count", df_digital_interval.shape[0])
-    #     mlflow.log_metric("filtered_speed_rows", filtered_speed.shape[0])
-    #     mlflow.log_metric("filtered_speed_columns", len(filtered_speed.columns))
-    #     mlflow.log_metric("output_filename", output_filename) 
-    #     mlflow.log_metric("output_path", output_path)
+    with mlflow.start_run(run_name=f"01_preprocessing_{tag}"):
+        mlflow.set_tag("filename", filename)
+        mlflow.set_tag("tag", tag)
+        mlflow.log_param("digital_tag", digital_tag)
+        mlflow.log_param("speed_tag", speed_tag)
+        mlflow.log_metric("df_digital_rows", df_digital_.shape[0])
+        mlflow.log_metric("df_speed_rows", df_speed_.shape[0])
+        mlflow.log_metric("interval_count", df_digital_interval.shape[0])
+        mlflow.log_metric("filtered_speed_rows", filtered_speed.shape[0])
+        mlflow.log_metric("filtered_speed_columns", len(filtered_speed.columns))
+        mlflow.log_metric("output_filename", output_filename) 
+        mlflow.log_metric("output_path", output_path)
         
-    #     mlflow.end_run()
+        mlflow.end_run()
 
     return filtered_speed
 
