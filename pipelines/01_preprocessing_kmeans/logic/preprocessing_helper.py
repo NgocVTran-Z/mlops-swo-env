@@ -31,7 +31,7 @@ mapping_tags = {
 #----params--
 tracking_server_arn =  os.environ["TRACKING_SERVER_ARN"]
 # tracking_server_arn = 'arn:aws:sagemaker:us-east-1:975049948583:mlflow-tracking-server/mlflow-tracking-server'
-mlflow.set_tracking_uri(tracking_server_arn)
+# mlflow.set_tracking_uri(tracking_server_arn)
 mlflow.set_experiment("01_preprocessing_kmeans")
 
 
