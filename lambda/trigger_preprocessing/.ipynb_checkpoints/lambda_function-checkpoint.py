@@ -87,7 +87,8 @@ def lambda_handler(event, context):
                 "S3_BUCKET": bucket,
                 "INPUT_FILES": json.dumps(relative_files),
                 "DATA_PREFIX": data_prefix,
-                "SPEED_TAG": json.dumps(body.get("speed_tag", []))
+                "SPEED_TAG": json.dumps(body.get("speed_tag", [])),
+                "TRACKING_SERVER_ARN": os.environ["TRACKING_SERVER_ARN"]
             },
             ProcessingResources={
                 "ClusterConfig": {
