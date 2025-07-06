@@ -2,7 +2,7 @@ import pandas as pd
 import sys
 import os
 
-# import mlflow
+import mlflow
 
 
 # Add shared module to path
