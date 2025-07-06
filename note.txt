@@ -66,3 +66,13 @@ aws s3 cp pipelines/00_test/ s3://swo-ngoctran-public/mlops/jobs/00_test/ --recu
 
 
 
+#-------------
+cd lambda/trigger_preprocessing
+zip function.zip lambda_function.py
+
+aws lambda update-function-code \
+  --function-name trigger-preprocess-kmeans \
+  --zip-file fileb://function.zip \
+  --region us-east-1
+
+

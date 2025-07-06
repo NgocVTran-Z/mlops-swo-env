@@ -59,6 +59,7 @@ Resources:
           S3_BUCKET: !Ref S3Bucket
           DATA_PREFIX: mlops/raw_data/
           OUTPUT_PREFIX: mlops/pipelines/01_preprocessing_kmeans/
+          TRACKING_SERVER_ARN: arn:aws:sagemaker:us-east-1:975049948583:mlflow-tracking-server/mlflow-tracking-server
       Events:
         ApiTrigger:
           Type: Api
