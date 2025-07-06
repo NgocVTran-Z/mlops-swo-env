@@ -5,7 +5,8 @@ Description: MLOps - Trigger All Pipelines
 Parameters:
   ProcessingImageUri:
     Type: String
-    Default: 683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3
+    # Default: 683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3
+    Default: 975049948583.dkr.ecr.us-east-1.amazonaws.com/sagemaker-custom-mlflow
 
   S3Bucket:
     Type: String

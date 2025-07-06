@@ -11,6 +11,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../s
 from logic.preprocessing_helper import internal_preprocessing
 from utils.general_utils import load_parquet_from_s3  # Only keep load, not save
 
+import mlflow
+print("✅ mlflow imported:", mlflow.__version__)
+
+
 def main():
     print("✅ SageMaker preprocessing kmeans script started ...")
 
