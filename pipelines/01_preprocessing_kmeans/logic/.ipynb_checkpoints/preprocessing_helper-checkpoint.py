@@ -3,7 +3,7 @@ import sys
 import os
 
 import mlflow
-
+print(mlflow.__version__)
 
 # Add shared module to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../shared")))
