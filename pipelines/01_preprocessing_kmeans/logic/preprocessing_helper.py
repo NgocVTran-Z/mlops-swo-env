@@ -79,7 +79,7 @@ def internal_preprocessing(
         mlflow.log_metric("filtered_speed_rows", filtered_speed.shape[0])
         mlflow.log_metric("filtered_speed_columns", len(filtered_speed.columns))
         mlflow.set_tag("output_filename", output_filename) 
-        mlflow.log_metric("output_path", output_path)
+        mlflow.set_tag("output_path", output_path)
         
         mlflow.end_run()
 
