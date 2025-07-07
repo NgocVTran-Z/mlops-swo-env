@@ -31,7 +31,7 @@ mapping_tags = {
 #----params--
 tracking_server_arn =  os.environ["TRACKING_SERVER_ARN"]
 # tracking_server_arn = 'arn:aws:sagemaker:us-east-1:975049948583:mlflow-tracking-server/mlflow-tracking-server'
-# mlflow.set_tracking_uri(tracking_server_arn)
+mlflow.set_tracking_uri(tracking_server_arn)
 mlflow.set_experiment("01_preprocessing_kmeans")
 
 
@@ -44,7 +44,9 @@ def internal_preprocessing(
     output_path                                  
 ):
     print("This is internal logic of preprocessing pipeline", tag)
-
+    with mlflow.start_run(run_name=f"01_preprocessing_{tag}"):
+        mlflow.set_tag("filename", "Test")
+        
     # Get mapping tag names
     digital_tag = mapping_tags["Digital"][tag]
     speed_tag = mapping_tags["Speed"][tag]
@@ -68,6 +70,7 @@ def internal_preprocessing(
     print("Filtered speed", filtered_speed.shape)
     print("Filtered speed columns:", filtered_speed.columns)
 
+    # log mlflow
     with mlflow.start_run(run_name=f"01_preprocessing_{tag}"):
         mlflow.set_tag("filename", filename)
         mlflow.set_tag("tag", tag)
@@ -81,7 +84,7 @@ def internal_preprocessing(
         mlflow.set_tag("output_filename", output_filename) 
         mlflow.set_tag("output_path", output_path)
         
-        mlflow.end_run()
+        # mlflow.end_run()
 
     return filtered_speed
 
