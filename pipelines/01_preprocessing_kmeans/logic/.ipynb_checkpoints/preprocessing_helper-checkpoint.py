@@ -78,7 +78,7 @@ def internal_preprocessing(
         mlflow.log_metric("interval_count", df_digital_interval.shape[0])
         mlflow.log_metric("filtered_speed_rows", filtered_speed.shape[0])
         mlflow.log_metric("filtered_speed_columns", len(filtered_speed.columns))
-        mlflow.log_metric("output_filename", output_filename) 
+        mlflow.set_tag("output_filename", output_filename) 
         mlflow.log_metric("output_path", output_path)
         
         mlflow.end_run()
