@@ -7,19 +7,23 @@ sagemaker = boto3.client("sagemaker")
 
 def lambda_handler(event, context):
     print("🟢 Lambda triggered.")
-    print("📨 Incoming event:", event)
+    print("Incoming event:", event)
+
+    print("🟢 ENV DUMP:")
+    for k, v in os.environ.items():
+        print(f"{k} = {v}")
 
     try:
         body = json.loads(event.get("body", "{}"))
 
-        input_bucket = body.get("input_bucket")
-        input_key = body.get("input_key")
-        model_output_key = body.get("model_output_key")
-        clustered_output_key = body.get("clustered_output_key")
+        input_files = body.get("input_files")
         n_clusters = body.get("n_clusters", 5)
 
-        if not input_bucket or not input_key or not model_output_key or not clustered_output_key:
-            raise ValueError("Missing one of required input parameters.")
+        if not input_files or not isinstance(input_files, list) or len(input_files) == 0:
+            raise ValueError("❌ 'input_files' must be a non-empty list of S3 paths")
+
+        # Join input_files list into one string (separated by "|") to pass via ENV
+        input_files_env = "|".join(input_files)
 
         role_arn = os.environ["SAGEMAKER_ROLE_ARN"]
         image_uri = os.environ["PROCESSING_IMAGE_URI"]
@@ -30,7 +34,9 @@ def lambda_handler(event, context):
         job_name = f"training-kmeans-{uuid.uuid4().hex[:8]}"
         output_uri = f"s3://{bucket}/{output_prefix.rstrip('/')}/"
 
-        print("Output URI: ", output_uri)
+        print(f"🟢 Creating SageMaker Processing Job: {job_name}")
+        print(f"📂 Output URI: {output_uri}")
+        print(f"📥 Input files: {input_files}")
 
         sagemaker.create_processing_job(
             ProcessingJobName=job_name,
@@ -66,11 +72,9 @@ def lambda_handler(event, context):
                 ]
             },
             Environment={
-                "S3_BUCKET": input_bucket,
-                "INPUT_KEY": input_key,
-                "MODEL_OUTPUT_KEY": model_output_key,
-                "CLUSTERED_OUTPUT_KEY": clustered_output_key,
-                "N_CLUSTERS": str(n_clusters)
+                "INPUT_FILES": input_files_env,
+                "N_CLUSTERS": str(n_clusters),
+                "TRACKING_SERVER_ARN": os.environ["TRACKING_SERVER_ARN"]
             },
             ProcessingResources={
                 "ClusterConfig": {
@@ -83,7 +87,7 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "body": json.dumps({"message": "SageMaker processing job started", "job_name": job_name})
+            "body": json.dumps({"message": "✅ SageMaker processing job started", "job_name": job_name})
         }
 
     except Exception as e:
