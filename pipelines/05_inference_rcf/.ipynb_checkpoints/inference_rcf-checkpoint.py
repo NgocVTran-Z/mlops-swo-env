@@ -7,7 +7,7 @@ from pipelines.05_inference_rcf.logic import inference_helper
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--s3_bucket', type=str, default=os.environ.get('S3_BUCKET'))
+    # parser.add_argument('--s3_bucket', type=str, default=os.environ.get('S3_BUCKET'))
     parser.add_argument('--input_s3_uri', type=str, default=os.environ.get('INPUT_S3_URI'))
     parser.add_argument('--tag_name', type=str, default=os.environ.get('TAG_NAME'))
     parser.add_argument('--endpoint_name', type=str, default=os.environ.get('ENDPOINT_NAME'))

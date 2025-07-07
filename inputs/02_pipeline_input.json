@@ -3,6 +3,7 @@
     "s3://swo-ngoctran-public.s3.us-east-1.amazonaws.com/mlops/pipelines/01_preprocessing_kmeans/2024-01/30/23/sample_output1_DWA_processed.parquet",
     "s3://swo-ngoctran-public.s3.us-east-1.amazonaws.com/mlops/pipelines/01_preprocessing_kmeans/2024-01/30/23/sample_output3_DWA_processed.parquet"
   ],
-  "n_clusters": 5
+  "n_clusters": 5,
+  "speed_tag": ["DWA"]
 }
 

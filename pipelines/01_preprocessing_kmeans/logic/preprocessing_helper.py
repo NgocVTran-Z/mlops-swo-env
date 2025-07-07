@@ -147,4 +147,3 @@ def filter_by_intervals(df_intervals: pd.DataFrame, df_data: pd.DataFrame) -> pd
 
     # return original df columns
     return filtered[df_data.columns]
-
