@@ -1,17 +1,8 @@
 {
-  "input_bucket": "swo-ngoctran-public",
-  "input_key": "mlops/pipelines/01_preprocessing_kmeans/2024-01/DWA_preprocessed.parquet",
+  "input_files": [
+    "s3://swo-ngoctran-public.s3.us-east-1.amazonaws.com/mlops/pipelines/01_preprocessing_kmeans/2024-01/30/23/sample_output1_DWA_processed.parquet",
+    "s3://swo-ngoctran-public.s3.us-east-1.amazonaws.com/mlops/pipelines/01_preprocessing_kmeans/2024-01/30/23/sample_output3_DWA_processed.parquet"
+  ],
   "n_clusters": 5
 }
-
-
-{
-  "input_bucket": "swo-ngoctran-public",
-  "input_key": "mlops/pipelines/01_preprocessing_kmeans/part-00000-234ad20d-73d5-4a30-9b8d-95fd9b186605-c000.snappy_processed.parquet",
-  "model_output_key": "mlops/models/kmeans/model.joblib",
-  "clustered_output_key": "mlops/pipelines/02_training_kmeans/clustered_output.parquet",
-  "n_clusters": 5
-}
-
-
 

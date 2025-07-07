@@ -1,25 +1,38 @@
-import argparse
-from logic.training_helper import run_training
+import os
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input_bucket", type=str, required=True)
-    parser.add_argument("--input_key", type=str, required=True)
-    parser.add_argument("--model_output_key", type=str, required=True)
-    parser.add_argument("--clustered_output_key", type=str, required=True)
-    parser.add_argument("--n_clusters", type=int, default=5)
-    return parser.parse_args()
+def load_env_inputs():
+    """
+    Load environment variables and parse input.
+    Returns:
+        input_files (List[str]): list of S3 file paths
+        n_clusters (int): number of clusters
+        tracking_uri (str): MLflow tracking URI
+    """
+    print("Loading environment variables...")
+
+    input_files_str = os.environ.get("INPUT_FILES", "")
+    n_clusters = int(os.environ.get("N_CLUSTERS", "5"))
+    tracking_uri = os.environ.get("TRACKING_SERVER_ARN", "")
+
+    input_files = input_files_str.split("|") if input_files_str else []
+
+    print("INPUT_FILES raw string:", input_files_str)
+    print("Parsed input_files:")
+    for f in input_files:
+        print(" -", f)
+
+    print("N_CLUSTERS:", n_clusters)
+    print("TRACKING_SERVER_ARN:", tracking_uri)
+
+    return input_files, n_clusters, tracking_uri
+
 
 def main():
-    args = parse_args()
+    input_files, n_clusters, tracking_uri = load_env_inputs()
+    print("input files:", input_files)
+    print("n cluster:", n_clusters)
+    print("Environment loaded successfully.")
 
-    run_training(
-        bucket=args.input_bucket,
-        input_key=args.input_key,
-        model_output_key=args.model_output_key,
-        clustered_output_key=args.clustered_output_key,
-        n_clusters=args.n_clusters
-    )
 
 if __name__ == "__main__":
     main()

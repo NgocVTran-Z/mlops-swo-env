@@ -57,11 +57,20 @@ def main():
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
             df_tag = internal_preprocessing(df, filename, tag, output_filename, output_path)
-            
-            print(f"Saving to: {output_path}")
+
+            output_paths = list(local_to_s3_path(local_path=output_path,
+                                            bucket=bucket,
+                                            output_prefix="mlops/pipelines/01_preprocessing_kmeans"))
+            print(f"Saving to: {output_paths}")
             df_tag.to_parquet(output_path, index=False)
 
     print("✅ SageMaker preprocessing kmeans completed.")
+
+
+def local_to_s3_path(local_path, bucket, output_prefix):
+    # Remove the base local prefix
+    relative_path = local_path.replace("/opt/ml/processing/output/", "")
+    return f"s3://{bucket}/{output_prefix.rstrip('/')}/{relative_path}"
 
 
 

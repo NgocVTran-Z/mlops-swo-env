@@ -8,9 +8,9 @@ s3 = boto3.client("s3")
 
 def lambda_handler(event, context):
     print("🟢 Lambda triggered.")
-    print("📨 Incoming event:", event)
+    print("Incoming event:", event)
 
-    print("🧪 ENV DUMP:")
+    print("🟢 ENV DUMP:")
     for k, v in os.environ.items():
         print(f"{k} = {v}")
 
