@@ -25,6 +25,25 @@ def apply_shingling(series, window_size):
     """Convert 1D series into list of shingled vectors (sliding window)"""
     return [series[i:i+window_size] for i in range(len(series) - window_size + 1)]
 
+# def get_anomaly_scores(endpoint_name, shingled_vectors):
+#     """Call RCF endpoint with list of shingled feature vectors"""
+#     runtime = boto3.client("sagemaker-runtime", region_name="us-east-1")
+
+#     payload = {
+#         "instances": [{"features": vec} for vec in shingled_vectors]
+#     }
+
+#     response = runtime.invoke_endpoint(
+#         EndpointName=endpoint_name,
+#         ContentType="application/json",
+#         Accept="application/json",
+#         Body=json.dumps(payload)
+#     )
+
+#     result = response["Body"].read().decode("utf-8")
+#     scores = json.loads(result)
+#     return [item["score"] for item in scores]
+
 def get_anomaly_scores(endpoint_name, shingled_vectors):
     """Call RCF endpoint with list of shingled feature vectors"""
     runtime = boto3.client("sagemaker-runtime", region_name="us-east-1")
@@ -39,10 +58,21 @@ def get_anomaly_scores(endpoint_name, shingled_vectors):
         Accept="application/json",
         Body=json.dumps(payload)
     )
+    print(response["Body"].read().decode("utf-8"))
+    raw_result = response["Body"].read().decode("utf-8")
 
-    result = response["Body"].read().decode("utf-8")
-    scores = json.loads(result)
+    try:
+        scores = json.loads(raw_result)
+    except json.JSONDecodeError as e:
+        print("❌ Failed to parse response JSON:", raw_result)
+        raise e
+
+    if not isinstance(scores, list):
+        print("❌ Response is not a list. Got:", type(scores), "Value:", scores)
+        raise ValueError("Invalid RCF output format")
+
     return [item["score"] for item in scores]
+
 
 def process_anomaly_scores(df, endpoint_name_rcf, window_size=5):
     # Step 1: Ensure "value" column is clean
