@@ -5,6 +5,28 @@ import pandas as pd
 from io import BytesIO
 import sys
 
+#-------------debug
+import sys
+import os
+
+print("="*40)
+print("[DEBUG] sys.executable:", sys.executable)
+print("[DEBUG] Python version:", sys.version)
+print("[DEBUG] sys.path:")
+for p in sys.path:
+    print("   ", p)
+print("[DEBUG] Current working dir:", os.getcwd())
+print("="*40)
+
+# Test import sagemaker
+try:
+    import sagemaker
+    print("[DEBUG] sagemaker imported successfully:", sagemaker.__version__)
+except Exception as e:
+    print("[ERROR] Failed to import sagemaker:", str(e))
+#---------end of debug
+
+
 # Add shared module to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../shared")))
 
