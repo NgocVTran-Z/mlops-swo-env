@@ -93,7 +93,9 @@ def main():
     df["cluster_nr"] = cluster_results
     print("✅ Assigned clusters added to dataframe.")
     # print(df.head())
-    df = 
+    df = df[df["cluster_nr"]==cluster_nr]
+    print("Filtered cluster number:", df.shape)
+    
     
     
     print(f"✅ RCF Endpoint: {endpoint_rcf}")

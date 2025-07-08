@@ -16,6 +16,7 @@ def lambda_handler(event, context):
         tag_name = body.get("tag_name")
         endpoint_name_kmeans = body.get("endpoint_name_kmeans")
         endpoint_name_rcf = body.get("endpoint_name_rcf")
+        cluster_nr = body.get("cluster_nr")
 
         if not input_s3_uri or not tag_name or not endpoint_name_kmeans or not endpoint_name_rcf:
             raise ValueError("Missing required fields in input JSON.")
@@ -67,7 +68,8 @@ def lambda_handler(event, context):
                 "INPUT_S3_URI": input_s3_uri,
                 "TAG_NAME": tag_name,
                 "ENDPOINT_NAME_KMEANS": endpoint_name_kmeans,
-                "ENDPOINT_NAME_RCF": endpoint_name_rcf
+                "ENDPOINT_NAME_RCF": endpoint_name_rcf,
+                "CLUSTER_NR": str(cluster_nr) if cluster_nr is not None else ""
             },
             ProcessingResources={
                 "ClusterConfig": {
