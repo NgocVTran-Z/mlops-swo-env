@@ -59,19 +59,24 @@ def get_anomaly_scores(endpoint_name, shingled_vectors):
         Body=json.dumps(payload)
     )
     print(response["Body"].read().decode("utf-8"))
-    raw_result = response["Body"].read().decode("utf-8")
+    # raw_result = response["Body"].read().decode("utf-8")
+    raw_result = response["Body"]
+    txt = raw_result.read().decode("utf-8")
+    parsed = json.loads(txt)
+    scores = [item["score"] for item in parsed["scores"]]
+    
+    # try:
+    #     scores = json.loads(raw_result)
+    # except json.JSONDecodeError as e:
+    #     print("❌ Failed to parse response JSON:", raw_result)
+    #     raise e
 
-    try:
-        scores = json.loads(raw_result)
-    except json.JSONDecodeError as e:
-        print("❌ Failed to parse response JSON:", raw_result)
-        raise e
+    # if not isinstance(scores, list):
+    #     print("❌ Response is not a list. Got:", type(scores), "Value:", scores)
+    #     raise ValueError("Invalid RCF output format")
 
-    if not isinstance(scores, list):
-        print("❌ Response is not a list. Got:", type(scores), "Value:", scores)
-        raise ValueError("Invalid RCF output format")
-
-    return [item["score"] for item in scores]
+    # return [item["score"] for item in scores]
+    return [item["score"] for item in parsed["scores"]]
 
 
 def process_anomaly_scores(df, endpoint_name_rcf, window_size=5):
