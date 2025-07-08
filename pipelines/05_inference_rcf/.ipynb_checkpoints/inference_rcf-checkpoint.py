@@ -18,12 +18,12 @@ import json
 import boto3
 import pandas as pd
 import numpy as np
-
+from logic.inference_helper import transform
 
 
 def apply_shingling(series, window_size):
     """Convert 1D series into list of shingled vectors (sliding window)"""
-    return [series[i:i+window_size].tolist() for i in range(len(series) - window_size + 1)]
+    return [series[i:i+window_size] for i in range(len(series) - window_size + 1)]
 
 def get_anomaly_scores(endpoint_name, shingled_vectors):
     """Call RCF endpoint with list of shingled feature vectors"""
@@ -111,12 +111,13 @@ def main():
 
     # Load the parquet file from S3
     df = load_parquet_from_s3(s3_client, bucket, key)
-
+    
     # Filter by tag_name
     print(f"✅ TAG_NAME: {tag_name}")
     df = df[df["tag_name"] == tag_name].copy()
     print(f" Data shape after filtering: {df.shape}")
-
+    # df = transform(df)
+    
     # Placeholder for next step
     print(f"✅ KMeans Endpoint: {endpoint_kmeans}")
     # # Extract 'value' column and dropna
@@ -147,9 +148,9 @@ def main():
             ContentType="text/csv",
             Body=payload
         )
-        # Convert kết quả từ chuỗi về số
+        # Convert result to digital
         pred_str = response["Body"].read().decode("utf-8")
-        pred = int(eval(pred_str)[0])  # ví dụ "[2]" → 2
+        pred = int(eval(pred_str)[0])  # "[2]" → 2
         cluster_results.append(pred)
 
     
