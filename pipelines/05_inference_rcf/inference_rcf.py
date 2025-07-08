@@ -4,9 +4,16 @@ import pandas as pd
 from io import BytesIO
 
 
+import sys
+print("PYTHONPATH:", sys.path)
+print("Files in working dir:", os.listdir("/opt/ml/processing/code"))
+
 # KMeans
+import sagemaker
+print(sagemaker.__version__)
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import CSVSerializer
+
 
 
 
