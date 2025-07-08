@@ -14,6 +14,69 @@ print("Files in working dir:", os.listdir("/opt/ml/processing/code"))
 # from sagemaker.predictor import Predictor
 # from sagemaker.serializers import CSVSerializer
 
+import json
+import boto3
+import pandas as pd
+import numpy as np
+
+
+
+def apply_shingling(series, window_size):
+    """Convert 1D series into list of shingled vectors (sliding window)"""
+    return [series[i:i+window_size].tolist() for i in range(len(series) - window_size + 1)]
+
+def get_anomaly_scores(endpoint_name, shingled_vectors):
+    """Call RCF endpoint with list of shingled feature vectors"""
+    runtime = boto3.client("sagemaker-runtime")
+
+    payload = {
+        "instances": [{"features": vec} for vec in shingled_vectors]
+    }
+
+    response = runtime.invoke_endpoint(
+        EndpointName=endpoint_name,
+        ContentType="application/json",
+        Accept="application/json",
+        Body=json.dumps(payload)
+    )
+
+    result = response["Body"].read().decode("utf-8")
+    scores = json.loads(result)
+    return [item["score"] for item in scores]
+
+def process_anomaly_scores(df, endpoint_name_rcf, window_size=5):
+    # Step 1: Ensure "value" column is clean
+    values = df["value"].dropna().astype(float).tolist()
+
+    # Step 2: Shingling
+    shingled = apply_shingling(values, window_size)
+
+    if len(shingled) == 0:
+        raise ValueError("Shingling resulted in no data. Check if 'value' has enough rows.")
+
+    # Step 3: Call endpoint
+    scores = get_anomaly_scores(endpoint_name_rcf, shingled)
+
+    # Step 4: Padding to align score with original df
+    padded_scores = [np.nan] * (window_size - 1) + scores
+    df = df.reset_index(drop=True)
+    df["anomaly_scores"] = padded_scores
+
+    return df
+
+def save_parquet_to_s3(df, bucket, output_prefix, filename="inference_output.parquet"):
+    """Save DataFrame as .parquet to S3"""
+    import io
+
+    buffer = io.BytesIO()
+    df.to_parquet(buffer, index=False)
+    buffer.seek(0)
+
+    s3 = boto3.client("s3")
+    output_key = f"{output_prefix}{filename}"
+    s3.upload_fileobj(buffer, bucket, output_key)
+
+    print(f"✅ Saved output to s3://{bucket}/{output_key}")
 
 
 
@@ -99,10 +162,28 @@ def main():
     
     
     print(f"✅ RCF Endpoint: {endpoint_rcf}")
-    # Transform df - preprocessing data before put in RCF model
+    # Transform df - preprocessing data before put in RCF model and call MME 
+    df = process_anomaly_scores(df, endpoint_name_rcf)
+    print(df.shape)
 
-    # Call MME
+    # save to inference bucket
+    bucket = os.environ["S3_BUCKET"]
+    output_prefix = os.environ["OUTPUT_PREFIX"]  # ends with `/`
+
+    # Tách phần key tương đối sau "mlops/raw_data/"
+    input_s3_uri = os.environ["INPUT_S3_URI"]
+    raw_data_prefix = os.environ.get("DATA_PREFIX", "mlops/raw_data/")  # fallback 
     
+    bucket, input_key = parse_s3_uri(input_s3_uri)
+    relative_path = input_key.replace(raw_data_prefix, "")  # 2024-01/30/23/sample.parquet
+    subfolder = "/".join(relative_path.split("/")[:-1])     # 2024-01/30/23
+    
+    # Full output_prefix
+    output_prefix = os.environ["OUTPUT_PREFIX"]  # eg: mlops/pipelines/05_inference_rcf/
+    final_output_prefix = f"{output_prefix}{subfolder}/"
+
+    # save_parquet_to_s3(df, bucket, final_output_prefix)
+
     
     
 
