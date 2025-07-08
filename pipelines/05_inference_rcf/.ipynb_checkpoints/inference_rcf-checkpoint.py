@@ -184,7 +184,10 @@ def main():
     final_output_prefix = f"{output_prefix}{subfolder}/"
 
     # save to s3 bucket
+    print(f"✅ Saved output to s3://{bucket}/{final_output_prefix}inference_output.parquet")
     save_parquet_to_s3(df, bucket, final_output_prefix)
+    print("bucket", bucket)
+    print("final output prefix", final_output_prefix)
 
     
     
