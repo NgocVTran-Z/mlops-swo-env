@@ -9,10 +9,10 @@ print("PYTHONPATH:", sys.path)
 print("Files in working dir:", os.listdir("/opt/ml/processing/code"))
 
 # KMeans
-import sagemaker
-print(sagemaker.__version__)
-from sagemaker.predictor import Predictor
-from sagemaker.serializers import CSVSerializer
+# import sagemaker
+# print(sagemaker.__version__)
+# from sagemaker.predictor import Predictor
+# from sagemaker.serializers import CSVSerializer
 
 
 
@@ -55,31 +55,41 @@ def main():
 
     # Placeholder for next step
     print(f"✅ KMeans Endpoint: {endpoint_kmeans}")
-    # Extract 'value' column and dropna
-    values = df["value"].dropna().astype(float).tolist()
-
-    if len(values) == 0:
-        raise ValueError("No values found in column 'value' after filtering.")
-
-    # Prepare CSV payload
-    csv_payload = "\n".join([str(x) for x in values])
-
-    # Init predictor
-    predictor = Predictor(
-        endpoint_name=endpoint_kmeans,
-        serializer=CSVSerializer(),
-        deserializer=JSONDeserializer()
-    )
-
-    # Predict clusters
-    response = predictor.predict(csv_payload)  # Expect list of {"predicted_label": int}
-    cluster_preds = [item["predicted_label"] for item in response]
-
-    # Add back to dataframe
-    df = df.reset_index(drop=True)  # Ensure alignment
-    df["cluster_nr"] = cluster_preds
-
+    # # Extract 'value' column and dropna
+    # values = df["value"].dropna().astype(float).tolist()
+    # if len(values) == 0:
+    #     raise ValueError("No values found in column 'value' after filtering.")
+    # # Prepare CSV payload
+    # csv_payload = "\n".join([str(x) for x in values])
+    # # Init predictor
+    # predictor = Predictor(
+    #     endpoint_name=endpoint_kmeans,
+    #     serializer=CSVSerializer(),
+    #     deserializer=JSONDeserializer()
+    # )
+    # # Predict clusters
+    # response = predictor.predict(csv_payload)  # Expect list of {"predicted_label": int}
+    # cluster_preds = [item["predicted_label"] for item in response]
+    # # Add back to dataframe
+    # df = df.reset_index(drop=True)  # Ensure alignment
+    # df["cluster_nr"] = cluster_preds
+    
+    runtime = boto3.client("sagemaker-runtime", region_name="us-east-1")
+    cluster_results = []
+    for val in df["value"]:
+        payload = str(val)
+        response = runtime.invoke_endpoint(
+            EndpointName=endpoint_kmeans,
+            ContentType="text/csv",
+            Body=payload
+        )
+        # Convert kết quả từ chuỗi về số
+        pred_str = response["Body"].read().decode("utf-8")
+        pred = int(eval(pred_str)[0])  # ví dụ "[2]" → 2
+        cluster_results.append(pred)
+    
     print("✅ Assigned clusters added to dataframe.")
+    df["cluster_nr"] = cluster_results
     print(df.head())
 
     
