@@ -58,9 +58,9 @@ def main():
 
             df_tag = internal_preprocessing(df, filename, tag, output_filename, output_path)
 
-            output_paths = list(local_to_s3_path(local_path=output_path,
+            output_paths = local_to_s3_path(local_path=output_path,
                                             bucket=bucket,
-                                            output_prefix="mlops/pipelines/01_preprocessing_kmeans"))
+                                            output_prefix="mlops/pipelines/01_preprocessing_kmeans")
             print(f"Saving to: {output_paths}")
             df_tag.to_parquet(output_path, index=False)
 
