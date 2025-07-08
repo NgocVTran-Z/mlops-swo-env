@@ -160,6 +160,7 @@ Resources:
           S3_BUCKET: !Ref S3Bucket
           OUTPUT_PREFIX: mlops/pipelines/05_inference_rcf/output/
           ENDPOINT_NAME: randomcutforest-2025-06-16-04-12-03-443
+          DATA_PREFIX: mlops/raw_data/
       Events:
         ApiTrigger:
           Type: Api

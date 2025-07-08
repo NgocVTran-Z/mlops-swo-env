@@ -15,7 +15,7 @@ def main():
     endpoint_kmeans = os.environ.get("ENDPOINT_NAME_KMEANS")
     endpoint_rcf = os.environ.get("ENDPOINT_NAME_RCF")
 
-    data_prefix = os.environ["DATA_PREFIX"]
+    # data_prefix = os.environ["DATA_PREFIX"]
     
     print("✅ Inference RCF script started")
     
