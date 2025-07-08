@@ -155,10 +155,11 @@ def main():
     
     df["cluster_nr"] = cluster_results
     print("✅ Assigned clusters added to dataframe.")
-    # print(df.head())
-    df = df[df["cluster_nr"]==cluster_nr]
-    print("Filtered cluster number:", df.shape)
     
+    # print(df.head())
+    print("cluster_nr:", cluster_nr)
+    # df = df[df["cluster_nr"]==cluster_nr]
+    print("Filtered cluster number:", df.shape)
     
     
     print(f"✅ RCF Endpoint: {endpoint_rcf}")
@@ -183,7 +184,7 @@ def main():
     final_output_prefix = f"{output_prefix}{subfolder}/"
 
     # save to s3 bucket
-    # save_parquet_to_s3(df, bucket, final_output_prefix)
+    save_parquet_to_s3(df, bucket, final_output_prefix)
 
     
     

@@ -155,15 +155,16 @@ def main():
     
     df["cluster_nr"] = cluster_results
     print("✅ Assigned clusters added to dataframe.")
-    # print(df.head())
-    df = df[df["cluster_nr"]==cluster_nr]
-    print("Filtered cluster number:", df.shape)
     
+    # print(df.head())
+    print("cluster_nr:", cluster_nr)
+    # df = df[df["cluster_nr"]==cluster_nr]
+    print("Filtered cluster number:", df.shape)
     
     
     print(f"✅ RCF Endpoint: {endpoint_rcf}")
     # Transform df - preprocessing data before put in RCF model and call MME 
-    df = process_anomaly_scores(df, endpoint_name_rcf)
+    df = process_anomaly_scores(df, endpoint_rcf)
     print(df.shape)
 
     # save to inference bucket
@@ -182,7 +183,8 @@ def main():
     output_prefix = os.environ["OUTPUT_PREFIX"]  # eg: mlops/pipelines/05_inference_rcf/
     final_output_prefix = f"{output_prefix}{subfolder}/"
 
-    # save_parquet_to_s3(df, bucket, final_output_prefix)
+    # save to s3 bucket
+    save_parquet_to_s3(df, bucket, final_output_prefix)
 
     
     
