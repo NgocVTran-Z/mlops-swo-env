@@ -35,6 +35,7 @@ def main():
     tag_name = os.environ.get("TAG_NAME")
     endpoint_kmeans = os.environ.get("ENDPOINT_NAME_KMEANS")
     endpoint_rcf = os.environ.get("ENDPOINT_NAME_RCF")
+    cluster_nr = os.environ.get("CLUSTER_NR")
 
     print("✅ Inference RCF script started")
     print(f"✅ INPUT_S3_URI: {file_path}")
@@ -87,11 +88,12 @@ def main():
         pred_str = response["Body"].read().decode("utf-8")
         pred = int(eval(pred_str)[0])  # ví dụ "[2]" → 2
         cluster_results.append(pred)
-    
-    print("✅ Assigned clusters added to dataframe.")
-    df["cluster_nr"] = cluster_results
-    print(df.head())
 
+    
+    df["cluster_nr"] = cluster_results
+    print("✅ Assigned clusters added to dataframe.")
+    # print(df.head())
+    df = 
     
     
     print(f"✅ RCF Endpoint: {endpoint_rcf}")
