@@ -27,7 +27,7 @@ def apply_shingling(series, window_size):
 
 def get_anomaly_scores(endpoint_name, shingled_vectors):
     """Call RCF endpoint with list of shingled feature vectors"""
-    runtime = boto3.client("sagemaker-runtime")
+    runtime = boto3.client("sagemaker-runtime", region_name="us-east-1")
 
     payload = {
         "instances": [{"features": vec} for vec in shingled_vectors]
