@@ -24,7 +24,7 @@ def main():
     endpoint_rcf = os.environ.get("ENDPOINT_NAME_RCF")
 
     print("✅ Inference RCF script started")
-    print(f"📂 INPUT_S3_URI: {file_path}")
+    print(f"✅ INPUT_S3_URI: {file_path}")
 
     # Parse S3 URI to get bucket and key
     bucket, key = parse_s3_uri(file_path)
@@ -36,12 +36,12 @@ def main():
     df = load_parquet_from_s3(s3_client, bucket, key)
 
     # Filter by tag_name
-    print(f"🏷️ TAG_NAME: {tag_name}")
+    print(f"✅ TAG_NAME: {tag_name}")
     df = df[df["tag_name"] == tag_name].copy()
-    print(f"📊 Data shape after filtering: {df.shape}")
+    print(f" Data shape after filtering: {df.shape}")
 
     # Placeholder for next step
-    print(f"🧠 KMeans Endpoint: {endpoint_kmeans}")
+    print(f"✅ KMeans Endpoint: {endpoint_kmeans}")
     # Extract 'value' column and dropna
     values = df["value"].dropna().astype(float).tolist()
 
@@ -66,12 +66,18 @@ def main():
     df = df.reset_index(drop=True)  # Ensure alignment
     df["cluster_nr"] = cluster_preds
 
-    print("🧠 Assigned clusters added to dataframe.")
+    print("✅ Assigned clusters added to dataframe.")
     print(df.head())
 
     
     
-    print(f"🌲 RCF Endpoint: {endpoint_rcf}")
+    print(f"✅ RCF Endpoint: {endpoint_rcf}")
+    # Transform df - preprocessing data before put in RCF model
+
+    # Call MME
+    
+    
+    
 
 if __name__ == "__main__":
     main()
