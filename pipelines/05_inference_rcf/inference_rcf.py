@@ -12,6 +12,8 @@ def parse_s3_uri(s3_uri):
     return parts[0], parts[1]
 
 def load_parquet_from_s3(s3_client, bucket, key):
+    """Load a parquet file from S3 into a Pandas DataFrame"""
+    print(f"📥 Loading file from S3 - Bucket: {bucket}, Key: {key}")
     response = s3_client.get_object(Bucket=bucket, Key=key)
     return pd.read_parquet(BytesIO(response["Body"].read()))
 
@@ -22,25 +24,25 @@ def main():
     endpoint_rcf = os.environ.get("ENDPOINT_NAME_RCF")
 
     print("✅ Inference RCF script started")
-    print(f"✅ INPUT_S3_URI: {file_path} - loading raw data")
+    print(f"📂 INPUT_S3_URI: {file_path}")
 
-    # Parse S3 URI
+    # Parse S3 URI to get bucket and key
     bucket, key = parse_s3_uri(file_path)
 
-    # Init boto3 client
+    # Init boto3 S3 client
     s3_client = boto3.client("s3")
 
-    # Load file
+    # Load the parquet file from S3
     df = load_parquet_from_s3(s3_client, bucket, key)
 
-    print(f"✅ TAG_NAME: {tag_name}")
-    df = df[df["tag_name"] == tag_name]
+    # Filter by tag_name
+    print(f"🏷️ TAG_NAME: {tag_name}")
+    df = df[df["tag_name"] == tag_name].copy()
     print(f"📊 Data shape after filtering: {df.shape}")
 
-    print(f"✅ KMeans Endpoint: {endpoint_kmeans}")
-    # prediction_clusters = ...
-
-    print(f"✅ RCF Endpoint: {endpoint_rcf}")
+    # Placeholder for next step
+    print(f"🧠 KMeans Endpoint: {endpoint_kmeans}")
+    print(f"🌲 RCF Endpoint: {endpoint_rcf}")
 
 if __name__ == "__main__":
     main()
