@@ -9,6 +9,12 @@ import sys
 import sys
 import os
 
+import os
+print("🔍 __file__ location:", __file__)
+print("📂 Contents of script dir:", os.listdir(os.path.dirname(__file__)))
+print("📁 ../../shared/ exists?:", os.path.exists(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../shared"))))
+
+
 print("="*40)
 print("[DEBUG] sys.executable:", sys.executable)
 print("[DEBUG] Python version:", sys.version)
