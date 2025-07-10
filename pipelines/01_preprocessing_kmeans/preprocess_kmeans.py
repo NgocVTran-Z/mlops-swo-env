@@ -18,6 +18,12 @@ for p in sys.path:
 print("[DEBUG] Current working dir:", os.getcwd())
 print("="*40)
 
+print("CWD:", os.getcwd())
+print("Files in current dir:", os.listdir('.'))
+print("Parent dir:", os.listdir('..'))
+print("Repo root?", os.listdir('../../'))
+print("="*40)
+
 # Test import sagemaker
 try:
     import sagemaker
